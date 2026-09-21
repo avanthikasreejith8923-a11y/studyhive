@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  /* Custom Honey & Wood Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FEF3C7;
+    border: 2px solid #1E1B18;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D97706;
+    border: 2px solid #1E1B18;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #B45309;
+  }
+}
+
+@layer components {
+  /* Pixel Button Styles */
+  .pixel-btn {
+    @apply relative inline-flex items-center justify-center font-pixel text-xs px-4 py-2.5 transition-all duration-75 select-none border-2 border-pixel-border shadow-pixel active:translate-x-0.5 active:translate-y-0.5 active:shadow-pixel-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-pixel;
+  }
+
+  .pixel-btn-primary {
+    @apply pixel-btn bg-honey-500 hover:bg-honey-400 text-oak-900 font-bold;
+  }
+
+  .pixel-btn-secondary {
+    @apply pixel-btn bg-cream-100 hover:bg-white text-oak-900;
+  }
+
+  .pixel-btn-accent {
+    @apply pixel-btn bg-amber-600 hover:bg-amber-500 text-cream-50 font-bold;
+  }
+
+  .pixel-btn-danger {
+    @apply pixel-btn bg-red-600 hover:bg-red-500 text-white font-bold;
+  }
+
+  .pixel-btn-success {
+    @apply pixel-btn bg-lime-600 hover:bg-lime-500 text-white font-bold;
+  }
+
+  /* Pixel Cards and Panels */
+  .pixel-panel {
+    @apply bg-cream-100 border-4 border-pixel-border shadow-pixel;
+  }
+
+  .pixel-panel-header {
+    @apply bg-honey-400 border-b-4 border-pixel-border px-4 py-2 font-pixel text-xs text-oak-900 flex items-center justify-between;
+  }
+
+  /* Input Fields */
+  .pixel-input {
+    @apply bg-white border-2 border-pixel-border px-3 py-2 text-base font-mono focus:outline-none focus:ring-2 focus:ring-honey-500 shadow-pixel-inset;
+  }
+}
+
+/* Subtle retro paper texture effect */
+.parchment-bg {
+  background-color: #FFFBEB;
+  background-image: radial-gradient(#FDE68A 0.75px, transparent 0.75px), radial-gradient(#FDE68A 0.75px, #FFFBEB 0.75px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}

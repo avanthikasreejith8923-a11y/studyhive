@@ -1,0 +1,21 @@
+{
+  "name": "studybee-monorepo",
+  "version": "1.0.0",
+  "description": "StudyBee - Gamified Pixel-Art Co-Working Study App",
+  "scripts": {
+    "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'dev'], { cwd: './server', stdio: 'inherit', shell: true }); spawn('npm', ['run', 'dev'], { cwd: './client', stdio: 'inherit', shell: true });\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "build": "npm run build --prefix client"
+  },
+  "keywords": [
+    "study",
+    "pomodoro",
+    "pixel-art",
+    "gamification",
+    "co-working"
+  ],
+  "author": "",
+  "license": "MIT"
+}
