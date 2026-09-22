@@ -51,3 +51,36 @@ export const authAPI = {
     }),
   getMe: () => apiFetch('/auth/me'),
 };
+
+export const sessionsAPI = {
+  create: (data) =>
+    apiFetch('/sessions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  update: (id, data) =>
+    apiFetch(`/sessions/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  getHistory: () => apiFetch('/sessions'),
+  getById: (id) => apiFetch(`/sessions/${id}`),
+  getTasks: (sessionId) => apiFetch(`/sessions/${sessionId}/tasks`),
+  createTask: (sessionId, text) =>
+    apiFetch(`/sessions/${sessionId}/tasks`, {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    }),
+};
+
+export const tasksAPI = {
+  update: (taskId, data) =>
+    apiFetch(`/tasks/${taskId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  delete: (taskId) =>
+    apiFetch(`/tasks/${taskId}`, {
+      method: 'DELETE',
+    }),
+};

@@ -5,6 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import sessionRoutes from './routes/sessionRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
 
 dotenv.config();
 
@@ -40,6 +42,8 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/sessions', sessionRoutes);
+app.use('/api/tasks', taskRoutes);
 
 // Socket.io basics
 io.on('connection', (socket) => {
