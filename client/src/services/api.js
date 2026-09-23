@@ -84,3 +84,17 @@ export const tasksAPI = {
       method: 'DELETE',
     }),
 };
+
+export const shopAPI = {
+  getCatalog: () => apiFetch('/shop/items'),
+  purchase: (itemId, autoEquip = true) =>
+    apiFetch('/shop/purchase', {
+      method: 'POST',
+      body: JSON.stringify({ itemId, autoEquip }),
+    }),
+  equip: (itemId) =>
+    apiFetch('/shop/equip', {
+      method: 'PUT',
+      body: JSON.stringify({ itemId }),
+    }),
+};

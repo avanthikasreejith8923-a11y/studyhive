@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { DEFAULT_OWNED_ITEMS, DEFAULT_EQUIPPED_ITEMS } from '../config/itemCatalog.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -54,26 +55,22 @@ const userSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    ownedItems: {
+      type: [String],
+      default: DEFAULT_OWNED_ITEMS,
+    },
+    equippedItems: {
+      hair: { type: String, default: DEFAULT_EQUIPPED_ITEMS.hair },
+      outfit: { type: String, default: DEFAULT_EQUIPPED_ITEMS.outfit },
+      accessory: { type: String, default: DEFAULT_EQUIPPED_ITEMS.accessory },
+      deskDecor: { type: String, default: DEFAULT_EQUIPPED_ITEMS.deskDecor },
+    },
     avatarConfig: {
       skinColor: { type: String, default: '#FDE68A' },
-      hairStyle: { type: String, default: 'messy_bob' },
-      hairColor: { type: String, default: '#78350F' },
-      outfit: { type: String, default: 'bee_sweater' },
-      outfitColor: { type: String, default: '#F59E0B' },
-      accessory: { type: String, default: 'round_glasses' },
-      deskMascot: { type: String, default: 'tiny_bee' },
-    },
-    unlockedItems: {
-      type: [String],
-      default: [
-        'hair_messy_bob',
-        'hair_cozy_bun',
-        'outfit_bee_sweater',
-        'outfit_library_cardigan',
-        'accessory_round_glasses',
-        'accessory_none',
-        'decor_honey_mug',
-      ],
+      hairStyle: { type: String, default: 'hair_curly' },
+      outfit: { type: String, default: 'outfit_sweater' },
+      accessory: { type: String, default: 'acc_glasses' },
+      deskDecor: { type: String, default: 'decor_mug' },
     },
     isBanned: {
       type: Boolean,

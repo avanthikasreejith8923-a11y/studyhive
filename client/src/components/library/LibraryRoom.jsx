@@ -1,5 +1,7 @@
 import React from 'react';
 import { PixelBee } from '../common/PixelBee';
+import { PixelAvatar } from '../avatar/PixelAvatar';
+import { DeskDecorRenderer } from './DeskDecorRenderer';
 import { Sparkles, Armchair, Coffee, BookOpen, Sun, Flame } from 'lucide-react';
 
 export const DESKS_CONFIG = [
@@ -184,23 +186,45 @@ export const LibraryRoom = ({
                   <div className="absolute inset-x-2 bottom-1.5 h-3 bg-[#92400E] border border-pixel-border shadow-inner" />
                   
                   {isUserHere ? (
-                    /* User's Live Animated Bee Avatar */
-                    <div className="flex flex-col items-center z-10">
-                      <PixelBee size={44} animated={true} />
+                    /* User's Live Animated Bee Avatar with Equipped Clothes & Desk Decor */
+                    <div className="flex flex-col items-center z-10 relative">
+                      <PixelAvatar
+                        size={46}
+                        equipped={currentUser?.equippedItems}
+                        animated={true}
+                      />
                       <div className="bg-honey-500 border border-pixel-border px-1.5 py-0.2 mt-1 shadow-pixel-sm">
                         <span className="font-pixel text-[8px] text-oak-900 truncate max-w-[90px] block">
                           {currentUser?.username || 'You'}
                         </span>
                       </div>
+                      {/* Equipped Desk Decoration placed on desk surface */}
+                      <div className="absolute -bottom-1 -right-8 z-20">
+                        <DeskDecorRenderer
+                          decorId={currentUser?.equippedItems?.deskDecor}
+                          size={22}
+                        />
+                      </div>
                     </div>
                   ) : isPlaceholderOccupied ? (
                     /* Static Co-Worker Bee */
-                    <div className="flex flex-col items-center z-10 opacity-90">
-                      <PixelBee size={38} animated={false} />
+                    <div className="flex flex-col items-center z-10 opacity-90 relative">
+                      <PixelAvatar
+                        size={38}
+                        equipped={{
+                          hair: desk.id === 'desk_oak' ? 'hair_bob' : 'hair_ponytail',
+                          outfit: desk.id === 'desk_oak' ? 'outfit_vest' : 'outfit_sweater',
+                          accessory: desk.id === 'desk_oak' ? 'acc_glasses' : 'acc_flower',
+                        }}
+                        animated={false}
+                      />
                       <div className="bg-cream-100 border border-pixel-border px-1.5 py-0.2 mt-1">
                         <span className="font-sans text-[10px] font-semibold text-oak-800">
                           {desk.defaultOccupant.username} 🐝
                         </span>
+                      </div>
+                      <div className="absolute -bottom-1 -right-7 z-20">
+                        <DeskDecorRenderer decorId="decor_mug" size={18} />
                       </div>
                     </div>
                   ) : (

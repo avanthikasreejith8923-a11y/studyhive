@@ -7,6 +7,7 @@ import { LibraryRoom } from './components/library/LibraryRoom';
 import { FocusPanel } from './components/library/FocusPanel';
 import { SeatSubjectModal } from './components/library/SeatSubjectModal';
 import { SessionSummaryModal } from './components/library/SessionSummaryModal';
+import { ShopView } from './components/shop/ShopView';
 import { sessionsAPI } from './services/api';
 import {
   Sparkles,
@@ -30,6 +31,7 @@ const MainContent = () => {
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [sessionTasks, setSessionTasks] = useState([]);
   const [lastFinishedSession, setLastFinishedSession] = useState(null);
+  const [lastFinishedRewards, setLastFinishedRewards] = useState(null);
   const [focusedMinutesElapsed, setFocusedMinutesElapsed] = useState(0);
 
   const openAuth = (mode = 'login') => {
@@ -70,10 +72,12 @@ const MainContent = () => {
     if (!activeSession) return;
 
     try {
-      await sessionsAPI.update(activeSession._id, {
+      const data = await sessionsAPI.update(activeSession._id, {
         focusMinutes: minutesFocused,
         completed: true,
       });
+      if (data.user) updateUser(data.user);
+      if (data.rewards) setLastFinishedRewards(data.rewards);
       // Update local state copy
       setActiveSession((prev) => (prev ? { ...prev, completed: true, focusMinutes: minutesFocused } : null));
     } catch (err) {
@@ -94,6 +98,8 @@ const MainContent = () => {
         completed: true,
       });
 
+      if (data.user) updateUser(data.user);
+      setLastFinishedRewards(data.rewards || null);
       setLastFinishedSession(data.session || activeSession);
       setIsSummaryModalOpen(true);
       setActiveSession(null);
@@ -221,8 +227,26 @@ const MainContent = () => {
               </div>
             </div>
           </div>
+        ) : activeTab === 'avatar' ? (
+          /* Avatar Customizer & Honey Shop */
+          <ShopView />
+        ) : activeTab === 'hives' ? (
+          /* Hives Placeholder Preview */
+          <div className="pixel-panel p-8 text-center bg-cream-100 shadow-pixel max-w-xl mx-auto my-12">
+            <div className="text-4xl mb-3">🐝</div>
+            <h2 className="font-pixel text-sm text-oak-900 mb-2">GROUP STUDY HIVES</h2>
+            <p className="font-sans text-xs text-oak-700 mb-4">
+              Real-time multi-user study rooms with shared desk presence and friend chat will be wired in Phase 4!
+            </p>
+            <button
+              onClick={() => setActiveTab('library')}
+              className="pixel-btn-primary text-xs py-2 px-4"
+            >
+              RETURN TO MY DESK
+            </button>
+          </div>
         ) : (
-          /* Authenticated Phase 2 Split Layout: Library Room on Left, Focus Panel on Right */
+          /* Authenticated Library Split Layout: Library Room on Left, Focus Panel on Right */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             {/* Left Column: Pixel Library Room (7 cols on desktop) */}
             <div className="lg:col-span-7 xl:col-span-7">
@@ -273,6 +297,7 @@ const MainContent = () => {
         session={lastFinishedSession}
         tasks={sessionTasks}
         focusedMinutes={focusedMinutesElapsed}
+        rewards={lastFinishedRewards}
       />
     </div>
   );

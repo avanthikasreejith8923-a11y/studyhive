@@ -1,5 +1,6 @@
 import { Session } from '../models/Session.js';
 import { Task } from '../models/Task.js';
+import { User } from '../models/User.js';
 
 export const createSession = async (req, res) => {
   try {
@@ -49,9 +50,77 @@ export const updateSession = async (req, res) => {
 
     await session.save();
 
+    // Reward calculation if completed or ending
+    let rewards = null;
+    let user = null;
+
+    if (completed || focusMinutes !== undefined) {
+      const tasks = await Task.find({ session: session._id });
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter((t) => t.done).length;
+
+      const target = session.targetMinutes || 25;
+      const focused = Math.max(0, Number(session.focusMinutes) || 0);
+      const isFullSession = Boolean(completed) && focused >= target;
+
+      let honeyEarned = 0;
+      let xpEarned = 0;
+
+      if (isFullSession) {
+        // Full Pomodoro interval completed: Base + Completion Bonus
+        honeyEarned += 25;
+        xpEarned += 50;
+
+        // Tasks bonus
+        honeyEarned += completedTasks * 5;
+        xpEarned += completedTasks * 10;
+
+        // Perfect task list bonus
+        if (totalTasks > 0 && completedTasks === totalTasks) {
+          honeyEarned += 10;
+          xpEarned += 20;
+        }
+      } else {
+        // Early quit / partial session: reduced or no honey
+        honeyEarned += Math.floor(focused / 5) * 2;
+        xpEarned += focused * 2;
+        honeyEarned += completedTasks * 3;
+        xpEarned += completedTasks * 5;
+      }
+
+      user = await User.findById(req.user._id);
+      if (user) {
+        const oldLevel = user.level || 1;
+        user.honey = Math.max(0, (user.honey || 0) + honeyEarned);
+        user.xp = Math.max(0, (user.xp || 0) + xpEarned);
+        user.totalFocusMinutes = (user.totalFocusMinutes || 0) + focused;
+
+        // Level threshold: 100 XP per level
+        const newLevel = Math.floor(user.xp / 100) + 1;
+        const leveledUp = newLevel > oldLevel;
+        user.level = newLevel;
+
+        await user.save();
+
+        rewards = {
+          honeyEarned,
+          xpEarned,
+          leveledUp,
+          newLevel,
+          isFullSession,
+          tasksCompleted: completedTasks,
+          tasksTotal: totalTasks,
+          totalHoney: user.honey,
+          totalXp: user.xp,
+        };
+      }
+    }
+
     return res.status(200).json({
       message: 'Session updated successfully.',
       session,
+      rewards,
+      user,
     });
   } catch (error) {
     console.error('updateSession error:', error);

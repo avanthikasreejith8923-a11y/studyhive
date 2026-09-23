@@ -7,6 +7,7 @@ import { connectDB } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import shopRoutes from './routes/shopRoutes.js';
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/shop', shopRoutes);
 
 // Socket.io basics
 io.on('connection', (socket) => {

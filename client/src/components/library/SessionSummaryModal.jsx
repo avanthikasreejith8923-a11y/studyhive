@@ -1,6 +1,6 @@
 import React from 'react';
 import { PixelBee } from '../common/PixelBee';
-import { Trophy, Clock, CheckCircle2, BookOpen, ArrowRight, X } from 'lucide-react';
+import { Trophy, Clock, CheckCircle2, BookOpen, ArrowRight, X, Sparkles, Flame } from 'lucide-react';
 
 export const SessionSummaryModal = ({
   isOpen,
@@ -8,6 +8,7 @@ export const SessionSummaryModal = ({
   session,
   tasks = [],
   focusedMinutes = 0,
+  rewards = null,
 }) => {
   if (!isOpen || !session) return null;
 
@@ -35,7 +36,7 @@ export const SessionSummaryModal = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 text-center space-y-5">
+        <div className="p-6 text-center space-y-4">
           {/* Mascot Celebration Banner */}
           <div className="relative inline-block my-1">
             <div className="bg-honey-200 border-3 border-pixel-border p-3 shadow-pixel inline-block">
@@ -55,10 +56,43 @@ export const SessionSummaryModal = ({
             </p>
           </div>
 
+          {/* Level Up Banner (if leveled up) */}
+          {rewards?.leveledUp && (
+            <div className="p-3 bg-honey-400 border-2 border-pixel-border font-pixel text-xs text-oak-900 shadow-pixel flex items-center justify-center gap-2 animate-bounce">
+              <Sparkles size={16} className="text-honey-900" />
+              <span>LEVEL UP! NOW LEVEL {rewards.newLevel}! ⭐</span>
+            </div>
+          )}
+
+          {/* Rewards Badges */}
+          {rewards && (
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="bg-honey-200 border-2 border-pixel-border p-2.5 shadow-pixel-sm text-center">
+                <div className="font-pixel text-[9px] text-honey-900 mb-0.5">HONEY EARNED</div>
+                <div className="font-pixel text-base text-honey-800">
+                  +{rewards.honeyEarned} 🍯
+                </div>
+              </div>
+              <div className="bg-cream-200 border-2 border-pixel-border p-2.5 shadow-pixel-sm text-center">
+                <div className="font-pixel text-[9px] text-oak-800 mb-0.5">XP GAINED</div>
+                <div className="font-pixel text-base text-oak-900">
+                  +{rewards.xpEarned} ⭐
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Early quit notification */}
+          {rewards && !rewards.isFullSession && (
+            <div className="text-[11px] font-sans text-amber-800 bg-amber-50 border border-amber-300 p-2 text-left">
+              ℹ️ Left desk before full timer finished. Honey drops were partially awarded for {focusedMinutes || session.focusMinutes || 1} minutes focused.
+            </div>
+          )}
+
           {/* Stats Summary Card */}
-          <div className="bg-cream-200 border-2 border-pixel-border p-3.5 text-left space-y-2.5 shadow-pixel-sm font-sans text-xs">
+          <div className="bg-cream-200 border-2 border-pixel-border p-3 text-left space-y-2 shadow-pixel-sm font-sans text-xs">
             {/* Subject */}
-            <div className="flex items-center justify-between border-b border-pixel-border/20 pb-2">
+            <div className="flex items-center justify-between border-b border-pixel-border/20 pb-1.5">
               <span className="text-oak-700 flex items-center gap-1.5 font-medium">
                 <BookOpen size={14} className="text-honey-700" />
                 Subject
@@ -67,7 +101,7 @@ export const SessionSummaryModal = ({
             </div>
 
             {/* Time Focused */}
-            <div className="flex items-center justify-between border-b border-pixel-border/20 pb-2">
+            <div className="flex items-center justify-between border-b border-pixel-border/20 pb-1.5">
               <span className="text-oak-700 flex items-center gap-1.5 font-medium">
                 <Clock size={14} className="text-honey-700" />
                 Time Focused

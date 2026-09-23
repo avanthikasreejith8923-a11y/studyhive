@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { PixelBee } from '../common/PixelBee';
+import { PixelAvatar } from '../avatar/PixelAvatar';
 import { LogOut, ShieldCheck, Flame, BookOpen, Users, Sparkles, Store } from 'lucide-react';
 
 export const Navbar = ({ onOpenAuth, activeTab, setActiveTab }) => {
@@ -110,11 +111,19 @@ export const Navbar = ({ onOpenAuth, activeTab, setActiveTab }) => {
 
               {/* User Chip */}
               <div className="flex items-center gap-2 pl-1 border-l-2 border-pixel-border/30">
+                <div
+                  onClick={() => setActiveTab && setActiveTab('avatar')}
+                  className="w-8 h-8 bg-honey-200 border-2 border-pixel-border flex items-center justify-center p-0.5 shadow-pixel-sm cursor-pointer hover:scale-105 transition-transform"
+                  title="Customize avatar & shop"
+                >
+                  <PixelAvatar size={26} equipped={user.equippedItems} animated={false} />
+                </div>
+
                 <div className="text-right">
                   <div className="font-pixel text-[11px] text-oak-900 max-w-[100px] truncate">
                     {user.username}
                   </div>
-                  <div className="text-[10px] font-retro text-oak-600 uppercase">
+                  <div className="text-[10px] font-sans font-semibold text-oak-600 uppercase">
                     {user.role === 'admin' ? 'Head Librarian 👑' : 'Study Bee 🐝'}
                   </div>
                 </div>
