@@ -98,3 +98,54 @@ export const shopAPI = {
       body: JSON.stringify({ itemId }),
     }),
 };
+
+export const hivesAPI = {
+  create: (data) =>
+    apiFetch('/hives', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  list: () => apiFetch('/hives'),
+  getById: (id) => apiFetch(`/hives/${id}`),
+  join: (data) =>
+    apiFetch('/hives/join', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  leave: (id) =>
+    apiFetch(`/hives/${id}/leave`, {
+      method: 'POST',
+    }),
+};
+
+export const friendsAPI = {
+  getFriends: () => apiFetch('/friends'),
+  getRequests: () => apiFetch('/friends/requests'),
+  search: (query) => apiFetch(`/friends/search?q=${encodeURIComponent(query)}`),
+  sendRequest: (data) =>
+    apiFetch('/friends/request', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  acceptRequest: (friendshipId) =>
+    apiFetch(`/friends/request/${friendshipId}/accept`, {
+      method: 'PUT',
+    }),
+  rejectRequest: (friendshipId) =>
+    apiFetch(`/friends/request/${friendshipId}/reject`, {
+      method: 'PUT',
+    }),
+  cancelOrRemove: (friendshipId) =>
+    apiFetch(`/friends/request/${friendshipId}/cancel`, {
+      method: 'DELETE',
+    }),
+};
+
+export const chatAPI = {
+  getHistory: (friendId) => apiFetch(`/chat/${friendId}`),
+  markRead: (friendId) =>
+    apiFetch(`/chat/${friendId}/read`, {
+      method: 'PATCH',
+    }),
+};
+

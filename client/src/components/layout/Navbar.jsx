@@ -4,7 +4,13 @@ import { PixelBee } from '../common/PixelBee';
 import { PixelAvatar } from '../avatar/PixelAvatar';
 import { LogOut, ShieldCheck, Flame, BookOpen, Users, Sparkles, Store } from 'lucide-react';
 
-export const Navbar = ({ onOpenAuth, activeTab, setActiveTab }) => {
+export const Navbar = ({
+  onOpenAuth,
+  activeTab,
+  setActiveTab,
+  onOpenFriends,
+  pendingRequestsCount = 0,
+}) => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
   return (
@@ -60,6 +66,19 @@ export const Navbar = ({ onOpenAuth, activeTab, setActiveTab }) => {
             >
               <Sparkles size={12} className="inline mr-1" />
               Avatar & Shop
+            </button>
+            <button
+              type="button"
+              onClick={onOpenFriends}
+              className="pixel-btn text-[10px] py-1 px-2.5 bg-honey-200 hover:bg-honey-300 text-oak-900 font-semibold relative"
+              title="Open Friends & Chat"
+            >
+              <span>💌 Friends</span>
+              {pendingRequestsCount > 0 && (
+                <span className="ml-1.5 bg-red-600 text-white font-mono text-[9px] px-1.5 py-0.2 rounded-full font-bold shadow-xs">
+                  {pendingRequestsCount}
+                </span>
+              )}
             </button>
             {isAdmin && (
               <button

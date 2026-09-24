@@ -9,6 +9,11 @@ import sessionRoutes from './routes/sessionRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import shopRoutes from './routes/shopRoutes.js';
 
+import hiveRoutes from './routes/hiveRoutes.js';
+import friendRoutes from './routes/friendRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import { setupSocketHandler } from './sockets/socketHandler.js';
+
 dotenv.config();
 
 const app = express();
@@ -19,7 +24,7 @@ const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
 export const io = new Server(server, {
   cors: {
     origin: [clientUrl, 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   },
 });
@@ -46,15 +51,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/shop', shopRoutes);
+app.use('/api/hives', hiveRoutes);
+app.use('/api/friends', friendRoutes);
+app.use('/api/chat', chatRoutes);
 
-// Socket.io basics
-io.on('connection', (socket) => {
-  console.log(`🔌 Client connected to hive socket: ${socket.id}`);
-
-  socket.on('disconnect', () => {
-    console.log(`👋 Client disconnected: ${socket.id}`);
-  });
-});
+// Initialize Socket.io handlers
+setupSocketHandler(io);
 
 // 404 handler
 app.use((req, res) => {

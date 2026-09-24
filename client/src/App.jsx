@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 import { Navbar } from './components/layout/Navbar';
 import { AuthModal } from './components/auth/AuthModal';
 import { PixelBee } from './components/common/PixelBee';
@@ -8,7 +9,11 @@ import { FocusPanel } from './components/library/FocusPanel';
 import { SeatSubjectModal } from './components/library/SeatSubjectModal';
 import { SessionSummaryModal } from './components/library/SessionSummaryModal';
 import { ShopView } from './components/shop/ShopView';
-import { sessionsAPI } from './services/api';
+import { HiveLobby } from './components/hives/HiveLobby';
+import { HiveRoom } from './components/hives/HiveRoom';
+import { FriendsModal } from './components/friends/FriendsModal';
+import { ChatDrawer } from './components/friends/ChatDrawer';
+import { sessionsAPI, hivesAPI, friendsAPI } from './services/api';
 import {
   Sparkles,
   Clock,
@@ -24,6 +29,14 @@ const MainContent = () => {
   const [authInitialMode, setAuthInitialMode] = useState('login');
   const [activeTab, setActiveTab] = useState('library');
 
+  // Hives State
+  const [currentHive, setCurrentHive] = useState(null);
+
+  // Friends & Chat State
+  const [friendsModalOpen, setFriendsModalOpen] = useState(false);
+  const [activeChatFriend, setActiveChatFriend] = useState(null);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+
   // Study Session State
   const [activeSession, setActiveSession] = useState(null);
   const [selectedDesk, setSelectedDesk] = useState(null);
@@ -33,6 +46,28 @@ const MainContent = () => {
   const [lastFinishedSession, setLastFinishedSession] = useState(null);
   const [lastFinishedRewards, setLastFinishedRewards] = useState(null);
   const [focusedMinutesElapsed, setFocusedMinutesElapsed] = useState(0);
+
+  // Fetch pending friend requests count on login
+  useEffect(() => {
+    if (isAuthenticated) {
+      friendsAPI
+        .getRequests()
+        .then((res) => {
+          setPendingRequestsCount(res.incoming?.length || 0);
+        })
+        .catch(() => {});
+    }
+  }, [isAuthenticated]);
+
+  const handleJoinHiveDirectly = async (hiveId) => {
+    try {
+      const data = await hivesAPI.join({ hiveId });
+      setCurrentHive(data.hive);
+      setActiveTab('hives');
+    } catch (err) {
+      console.error('Failed to join friend hive:', err);
+    }
+  };
 
   const openAuth = (mode = 'login') => {
     setAuthInitialMode(mode);
@@ -120,6 +155,8 @@ const MainContent = () => {
         onOpenAuth={() => openAuth('login')}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        onOpenFriends={() => setFriendsModalOpen(true)}
+        pendingRequestsCount={pendingRequestsCount}
       />
 
       {/* Main Container */}
@@ -231,20 +268,15 @@ const MainContent = () => {
           /* Avatar Customizer & Honey Shop */
           <ShopView />
         ) : activeTab === 'hives' ? (
-          /* Hives Placeholder Preview */
-          <div className="pixel-panel p-8 text-center bg-cream-100 shadow-pixel max-w-xl mx-auto my-12">
-            <div className="text-4xl mb-3">🐝</div>
-            <h2 className="font-pixel text-sm text-oak-900 mb-2">GROUP STUDY HIVES</h2>
-            <p className="font-sans text-xs text-oak-700 mb-4">
-              Real-time multi-user study rooms with shared desk presence and friend chat will be wired in Phase 4!
-            </p>
-            <button
-              onClick={() => setActiveTab('library')}
-              className="pixel-btn-primary text-xs py-2 px-4"
-            >
-              RETURN TO MY DESK
-            </button>
-          </div>
+          /* Group Study Hives: Room or Lobby */
+          currentHive ? (
+            <HiveRoom
+              hive={currentHive}
+              onLeaveHive={() => setCurrentHive(null)}
+            />
+          ) : (
+            <HiveLobby onEnterHive={(h) => setCurrentHive(h)} />
+          )
         ) : (
           /* Authenticated Library Split Layout: Library Room on Left, Focus Panel on Right */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
@@ -277,7 +309,7 @@ const MainContent = () => {
         </p>
       </footer>
 
-      {/* Modals */}
+      {/* Modals & Drawers */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
@@ -299,6 +331,22 @@ const MainContent = () => {
         focusedMinutes={focusedMinutesElapsed}
         rewards={lastFinishedRewards}
       />
+
+      <FriendsModal
+        isOpen={friendsModalOpen}
+        onClose={() => setFriendsModalOpen(false)}
+        onOpenChat={(friendUser) => setActiveChatFriend(friendUser)}
+        onJoinHiveDirectly={handleJoinHiveDirectly}
+        onPendingCountChange={setPendingRequestsCount}
+      />
+
+      {activeChatFriend && (
+        <ChatDrawer
+          friend={activeChatFriend}
+          currentUser={user}
+          onClose={() => setActiveChatFriend(null)}
+        />
+      )}
     </div>
   );
 };
@@ -306,7 +354,10 @@ const MainContent = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <MainContent />
+      <SocketProvider>
+        <MainContent />
+      </SocketProvider>
     </AuthProvider>
   );
 }
+
