@@ -39,6 +39,7 @@ export const register = async (req, res) => {
       email: email.toLowerCase(),
       password,
       role,
+      isAdmin: role === 'admin',
       honey: 50,
       xp: 0,
       level: 1,

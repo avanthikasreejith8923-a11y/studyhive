@@ -42,6 +42,9 @@ export const connectDB = async () => {
     await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 2000,
     });
+    try {
+      fs.writeFileSync(path.resolve(process.cwd(), '.active_mongo_uri'), uri, 'utf-8');
+    } catch (_) {}
     console.log(`🐝 Connected to MongoDB at: ${uri}`);
   } catch (err) {
     console.warn(`⚠️ Could not connect to local MongoDB (${err.message}). Starting in-memory fallback...`);
@@ -55,6 +58,9 @@ export const connectDB = async () => {
       const mongod = await MongoMemoryServer.create(opts);
       const memUri = mongod.getUri();
       await mongoose.connect(memUri);
+      try {
+        fs.writeFileSync(path.resolve(process.cwd(), '.active_mongo_uri'), memUri, 'utf-8');
+      } catch (_) {}
       console.log(`🍯 Connected to In-Memory MongoDB at: ${memUri}`);
     } catch (memErr) {
       console.error('❌ Failed to start In-Memory MongoDB:', memErr.message);

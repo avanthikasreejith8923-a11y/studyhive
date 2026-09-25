@@ -15,6 +15,8 @@ import { HiveRoom } from './components/hives/HiveRoom';
 import { BreakGamesView } from './components/games/BreakGamesView';
 import { FriendsModal } from './components/friends/FriendsModal';
 import { ChatDrawer } from './components/friends/ChatDrawer';
+import { StudyAssistantWidget } from './components/assistant/StudyAssistantWidget';
+import { AdminDashboard } from './components/admin/AdminDashboard';
 import { sessionsAPI, hivesAPI, friendsAPI } from './services/api';
 import {
   Sparkles,
@@ -70,6 +72,43 @@ const MainContent = () => {
         .catch(() => {});
     }
   }, [isAuthenticated]);
+
+  // Route Synchronization & Admin Route Protection
+  useEffect(() => {
+    const syncRoute = () => {
+      const path = window.location.pathname;
+      if (path === '/admin') {
+        if (!isAuthenticated) {
+          window.history.replaceState(null, '', '/');
+          setActiveTab('library');
+          openAuth('login');
+        } else if (user?.isAdmin || user?.role === 'admin') {
+          setActiveTab('admin');
+        } else {
+          window.history.replaceState(null, '', '/');
+          setActiveTab('library');
+          alert('Access denied: Administrator privileges required to access the Admin Console.');
+        }
+      }
+    };
+
+    syncRoute();
+    window.addEventListener('popstate', syncRoute);
+    return () => window.removeEventListener('popstate', syncRoute);
+  }, [isAuthenticated, user]);
+
+  const handleTabChange = (tab) => {
+    if (tab === 'admin') {
+      if (!user?.isAdmin && user?.role !== 'admin') {
+        alert('Access denied: Administrator privileges required to access the Admin Console.');
+        return;
+      }
+      window.history.pushState(null, '', '/admin');
+    } else if (window.location.pathname === '/admin') {
+      window.history.pushState(null, '', '/');
+    }
+    setActiveTab(tab);
+  };
 
   const handleJoinHiveDirectly = async (hiveId) => {
     try {
@@ -170,7 +209,7 @@ const MainContent = () => {
       <Navbar
         onOpenAuth={() => openAuth('login')}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         onOpenFriends={() => setFriendsModalOpen(true)}
         pendingRequestsCount={pendingRequestsCount}
         isBreakActive={isBreakActive}
@@ -281,6 +320,9 @@ const MainContent = () => {
               </div>
             </div>
           </div>
+        ) : activeTab === 'admin' ? (
+          /* Admin Console */
+          <AdminDashboard onReturnToApp={() => handleTabChange('library')} />
         ) : activeTab === 'avatar' ? (
           /* Avatar Customizer & Honey Shop */
           <ShopView />
@@ -377,6 +419,9 @@ const MainContent = () => {
           onClose={() => setActiveChatFriend(null)}
         />
       )}
+
+      {/* Floating Study Assistant AI Chatbot */}
+      {isAuthenticated && <StudyAssistantWidget />}
     </div>
   );
 };

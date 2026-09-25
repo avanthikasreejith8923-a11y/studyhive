@@ -149,3 +149,31 @@ export const chatAPI = {
     }),
 };
 
+export const assistantAPI = {
+  chat: (message, history = []) =>
+    apiFetch('/assistant/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, history }),
+    }),
+};
+
+export const adminAPI = {
+  getStats: () => apiFetch('/admin/stats'),
+  getUsers: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return apiFetch(`/admin/users${query ? `?${query}` : ''}`);
+  },
+  toggleBan: (userId, isBanned) =>
+    apiFetch(`/admin/users/${userId}/ban`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isBanned }),
+    }),
+  toggleAdmin: (userId, isAdmin) =>
+    apiFetch(`/admin/users/${userId}/role`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isAdmin }),
+    }),
+  getHives: () => apiFetch('/admin/hives'),
+};
+
+

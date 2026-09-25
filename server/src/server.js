@@ -12,6 +12,8 @@ import shopRoutes from './routes/shopRoutes.js';
 import hiveRoutes from './routes/hiveRoutes.js';
 import friendRoutes from './routes/friendRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import assistantRoutes from './routes/assistantRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { setupSocketHandler } from './sockets/socketHandler.js';
 
 dotenv.config();
@@ -54,6 +56,8 @@ app.use('/api/shop', shopRoutes);
 app.use('/api/hives', hiveRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/assistant', assistantRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Initialize Socket.io handlers
 setupSocketHandler(io);

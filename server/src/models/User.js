@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
     honey: {
       type: Number,
       default: 50, // Starting honey jar
