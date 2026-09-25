@@ -9,7 +9,7 @@ export const PixelBee = ({ size = 64, className = '', animated = true }) => {
     <div
       className={`inline-block select-none ${animated ? 'animate-float' : ''} ${className}`}
       style={{ width: size, height: size }}
-      title="StudyBee Mascot"
+      title="StudyHive Mascot"
     >
       <svg
         viewBox="0 0 24 24"

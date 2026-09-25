@@ -1,7 +1,7 @@
 import React from 'react';
 import { PomodoroTimer } from '../timer/PomodoroTimer';
 import { TaskList } from '../tasks/TaskList';
-import { MusicPlayerPlaceholder } from '../audio/MusicPlayerPlaceholder';
+import { MusicPlayer } from '../audio/MusicPlayer';
 import { LogOut, BookOpen, Clock, Sparkles } from 'lucide-react';
 
 export const FocusPanel = ({
@@ -9,6 +9,7 @@ export const FocusPanel = ({
   onLeaveDesk,
   onFocusComplete,
   onTasksChange,
+  onTimerModeChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -54,6 +55,7 @@ export const FocusPanel = ({
       <PomodoroTimer
         targetMinutes={activeSession?.targetMinutes || 25}
         onFocusComplete={onFocusComplete}
+        onModeChange={onTimerModeChange}
       />
 
       {/* Tasks List */}
@@ -62,8 +64,8 @@ export const FocusPanel = ({
         onTasksChange={onTasksChange}
       />
 
-      {/* Lo-Fi Music Player Placeholder */}
-      <MusicPlayerPlaceholder />
+      {/* Lo-Fi Radio Player */}
+      <MusicPlayer />
     </div>
   );
 };

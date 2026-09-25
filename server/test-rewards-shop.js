@@ -5,7 +5,7 @@ async function runPhase3Tests() {
   console.log('🧪 Starting Phase 3 Rewards & Shop Tests on:', BASE_URL);
 
   // 1. Register test user
-  const email = `scholar_p3_${Date.now()}@studybee.dev`;
+  const email = `scholar_p3_${Date.now()}@studyhive.dev`;
   const password = 'password123';
   const username = `p3_${Date.now().toString().slice(-5)}`;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { PixelBee } from '../common/PixelBee';
 import { PixelAvatar } from '../avatar/PixelAvatar';
-import { LogOut, ShieldCheck, Flame, BookOpen, Users, Sparkles, Store } from 'lucide-react';
+import { LogOut, ShieldCheck, Flame, BookOpen, Users, Sparkles, Store, Gamepad2 } from 'lucide-react';
 
 export const Navbar = ({
   onOpenAuth,
@@ -10,6 +10,7 @@ export const Navbar = ({
   setActiveTab,
   onOpenFriends,
   pendingRequestsCount = 0,
+  isBreakActive = false,
 }) => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
@@ -27,7 +28,7 @@ export const Navbar = ({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-pixel text-base text-honey-800 tracking-wider">
-                STUDYBEE
+                STUDYHIVE
               </span>
               <span className="bg-honey-500 text-oak-900 border border-pixel-border text-[9px] font-pixel px-1 py-0.2 shadow-pixel-sm">
                 BETA
@@ -57,6 +58,23 @@ export const Navbar = ({
             >
               <Users size={12} className="inline mr-1" />
               Hives
+            </button>
+            <button
+              onClick={() => setActiveTab('games')}
+              className={`pixel-btn text-[10px] py-1 px-2.5 flex items-center gap-1 ${
+                activeTab === 'games' ? 'bg-honey-500 text-oak-900 font-bold' : 'bg-cream-100'
+              }`}
+              title={isBreakActive ? 'Break active: Games unlocked!' : 'Break games unlock during Pomodoro breaks'}
+            >
+              <Gamepad2 size={12} />
+              <span>Break Games</span>
+              {isBreakActive ? (
+                <span className="bg-emerald-600 text-white font-pixel text-[8px] px-1 py-0.2 rounded-xs shadow-xs animate-pulse">
+                  OPEN
+                </span>
+              ) : (
+                <span className="text-[9px] text-oak-500">🔒</span>
+              )}
             </button>
             <button
               onClick={() => setActiveTab('avatar')}
@@ -143,7 +161,7 @@ export const Navbar = ({
                     {user.username}
                   </div>
                   <div className="text-[10px] font-sans font-semibold text-oak-600 uppercase">
-                    {user.role === 'admin' ? 'Head Librarian 👑' : 'Study Bee 🐝'}
+                    {user.role === 'admin' ? 'Head Librarian 👑' : 'Hive Scholar 🐝'}
                   </div>
                 </div>
 

@@ -1,7 +1,7 @@
 {
-  "name": "studybee-server",
+  "name": "studyhive-server",
   "version": "1.0.0",
-  "description": "Backend server for StudyBee gamified pixel-art co-working app",
+  "description": "Backend server for StudyHive gamified pixel-art co-working app",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

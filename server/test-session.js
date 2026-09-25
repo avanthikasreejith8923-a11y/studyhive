@@ -5,7 +5,7 @@ async function runSessionTests() {
   console.log('🧪 Starting Phase 2 Session & Task Tests on:', BASE_URL);
 
   // Step 1: Login or Register a test user
-  const email = `scholar_p2_${Date.now()}@studybee.dev`;
+  const email = `scholar_p2_${Date.now()}@studyhive.dev`;
   const password = 'password123';
   const username = `p2_${Date.now().toString().slice(-5)}`;
 

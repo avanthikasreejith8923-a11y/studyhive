@@ -40,7 +40,7 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    app: 'StudyBee API',
+    app: 'StudyHive API',
     message: 'Cozy Library server is buzzing happily! 🐝🍯',
     timestamp: new Date().toISOString(),
   });
@@ -73,7 +73,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   server.listen(PORT, () => {
-    console.log(`🍯 StudyBee Server running on port ${PORT}`);
+    console.log(`🍯 StudyHive Server running on port ${PORT}`);
     console.log(`🐝 Health check: http://localhost:${PORT}/api/health`);
   });
 });

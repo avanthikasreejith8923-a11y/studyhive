@@ -37,7 +37,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
     setErrorMsg('');
     setLoading(true);
     const demoUser = role === 'admin' ? 'admin_bee' : 'cozy_bee';
-    const demoEmail = `${demoUser}@studybee.dev`;
+    const demoEmail = `${demoUser}@studyhive.dev`;
     const demoPass = 'cozypower123';
 
     try {
@@ -164,7 +164,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={mode === 'login' ? 'bee@studybee.dev or username' : 'scholar@studybee.dev'}
+                placeholder={mode === 'login' ? 'bee@studyhive.dev or username' : 'scholar@studyhive.dev'}
                 className="w-full pixel-input text-sm"
               />
             </div>

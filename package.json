@@ -1,7 +1,7 @@
 {
-  "name": "studybee-monorepo",
+  "name": "studyhive-monorepo",
   "version": "1.0.0",
-  "description": "StudyBee - Gamified Pixel-Art Co-Working Study App",
+  "description": "StudyHive - Gamified Pixel-Art Co-Working Study App",
   "scripts": {
     "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'dev'], { cwd: './server', stdio: 'inherit', shell: true }); spawn('npm', ['run', 'dev'], { cwd: './client', stdio: 'inherit', shell: true });\"",
     "server": "npm run dev --prefix server",

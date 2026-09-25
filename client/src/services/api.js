@@ -1,12 +1,12 @@
 const API_BASE = '/api';
 
-export const getAuthToken = () => localStorage.getItem('studybee_token');
+export const getAuthToken = () => localStorage.getItem('studyhive_token');
 
 export const setAuthToken = (token) => {
   if (token) {
-    localStorage.setItem('studybee_token', token);
+    localStorage.setItem('studyhive_token', token);
   } else {
-    localStorage.removeItem('studybee_token');
+    localStorage.removeItem('studyhive_token');
   }
 };
 

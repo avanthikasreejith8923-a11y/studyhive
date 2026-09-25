@@ -9,7 +9,7 @@ export const requireAuth = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const secret = process.env.JWT_SECRET || 'studybee_super_secret_jwt_key_cozy_library_2026';
+    const secret = process.env.JWT_SECRET || 'studyhive_super_secret_jwt_key_cozy_library_2026';
     
     const decoded = jwt.verify(token, secret);
     const user = await User.findById(decoded.id);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
+import { MusicProvider, useMusic } from './context/MusicContext';
 import { Navbar } from './components/layout/Navbar';
 import { AuthModal } from './components/auth/AuthModal';
 import { PixelBee } from './components/common/PixelBee';
@@ -11,6 +12,7 @@ import { SessionSummaryModal } from './components/library/SessionSummaryModal';
 import { ShopView } from './components/shop/ShopView';
 import { HiveLobby } from './components/hives/HiveLobby';
 import { HiveRoom } from './components/hives/HiveRoom';
+import { BreakGamesView } from './components/games/BreakGamesView';
 import { FriendsModal } from './components/friends/FriendsModal';
 import { ChatDrawer } from './components/friends/ChatDrawer';
 import { sessionsAPI, hivesAPI, friendsAPI } from './services/api';
@@ -25,12 +27,22 @@ import {
 
 const MainContent = () => {
   const { user, isAuthenticated, updateUser } = useAuth();
+  const { pause: pauseMusic } = useMusic();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState('login');
   const [activeTab, setActiveTab] = useState('library');
 
+  // Timer & Break States (Solo vs Hive)
+  const [soloTimerMode, setSoloTimerMode] = useState('focus');
+  const [hiveTimerMode, setHiveTimerMode] = useState('focus');
+
   // Hives State
   const [currentHive, setCurrentHive] = useState(null);
+
+  // Active Break calculation (tied to active context: hive if in hive, else solo desk)
+  const isBreakActive = currentHive
+    ? hiveTimerMode === 'shortBreak' || hiveTimerMode === 'longBreak'
+    : soloTimerMode === 'shortBreak' || soloTimerMode === 'longBreak';
 
   // Friends & Chat State
   const [friendsModalOpen, setFriendsModalOpen] = useState(false);
@@ -124,6 +136,10 @@ const MainContent = () => {
   const handleLeaveDesk = async () => {
     if (!activeSession) return;
 
+    // Pause music and reset solo timer mode
+    pauseMusic();
+    setSoloTimerMode('focus');
+
     const totalMin = focusedMinutesElapsed || activeSession.targetMinutes || 25;
 
     try {
@@ -157,6 +173,7 @@ const MainContent = () => {
         setActiveTab={setActiveTab}
         onOpenFriends={() => setFriendsModalOpen(true)}
         pendingRequestsCount={pendingRequestsCount}
+        isBreakActive={isBreakActive}
       />
 
       {/* Main Container */}
@@ -267,12 +284,24 @@ const MainContent = () => {
         ) : activeTab === 'avatar' ? (
           /* Avatar Customizer & Honey Shop */
           <ShopView />
+        ) : activeTab === 'games' ? (
+          /* Pomodoro Break Mini-Games */
+          <BreakGamesView
+            activeTimerMode={currentHive ? hiveTimerMode : soloTimerMode}
+            isBreakActive={isBreakActive}
+            timerSource={currentHive ? 'hive' : 'solo'}
+            onReturnToDesk={() => setActiveTab(currentHive ? 'hives' : 'library')}
+          />
         ) : activeTab === 'hives' ? (
           /* Group Study Hives: Room or Lobby */
           currentHive ? (
             <HiveRoom
               hive={currentHive}
-              onLeaveHive={() => setCurrentHive(null)}
+              onLeaveHive={() => {
+                setCurrentHive(null);
+                setHiveTimerMode('focus');
+              }}
+              onTimerModeChange={(mode) => setHiveTimerMode(mode)}
             />
           ) : (
             <HiveLobby onEnterHive={(h) => setCurrentHive(h)} />
@@ -289,13 +318,14 @@ const MainContent = () => {
               />
             </div>
 
-            {/* Right Column: Focus Panel with Timer, Tasks, Music Placeholder (5 cols on desktop) */}
+            {/* Right Column: Focus Panel with Timer, Tasks, Music (5 cols on desktop) */}
             <div className="lg:col-span-5 xl:col-span-5">
               <FocusPanel
                 activeSession={activeSession}
                 onLeaveDesk={handleLeaveDesk}
                 onFocusComplete={handleFocusPeriodComplete}
                 onTasksChange={setSessionTasks}
+                onTimerModeChange={(mode) => setSoloTimerMode(mode)}
               />
             </div>
           </div>
@@ -305,7 +335,7 @@ const MainContent = () => {
       {/* Footer */}
       <footer className="mt-auto border-t-4 border-pixel-border bg-cream-100 py-3.5 px-4 text-center">
         <p className="font-sans text-xs text-oak-600">
-          StudyBee 🐝 • Cozy 16-bit library co-working study space with warm honey vibes.
+          StudyHive 🐝 • Cozy 16-bit library co-working study space with warm honey vibes.
         </p>
       </footer>
 
@@ -355,7 +385,9 @@ export default function App() {
   return (
     <AuthProvider>
       <SocketProvider>
-        <MainContent />
+        <MusicProvider>
+          <MainContent />
+        </MusicProvider>
       </SocketProvider>
     </AuthProvider>
   );

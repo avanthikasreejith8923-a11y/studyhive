@@ -1,4 +1,4 @@
-# 🐝 StudyBee: Gamified Pixel-Art Co-Working Study App
+# 🐝 StudyHive: Gamified Pixel-Art Co-Working Study App
 
 > A cozy 16-bit library aesthetic co-working space featuring Pomodoro focus desks, honey drop rewards, customizable pixel avatars, real-time hives, friend chat, break mini-games, and lo-fi tunes.
 
@@ -56,8 +56,8 @@ Both `/client` and `/server` have `.env.example` templates:
 **Server (`/server/.env`):**
 ```env
 PORT=5000
-MONGODB_URI=mongodb://127.0.0.1:27017/studybee
-JWT_SECRET=studybee_super_secret_jwt_key_cozy_library_2026
+MONGODB_URI=mongodb://127.0.0.1:27017/studyhive
+JWT_SECRET=studyhive_super_secret_jwt_key_cozy_library_2026
 CLIENT_URL=http://localhost:5173
 NODE_ENV=development
 ```
@@ -118,4 +118,4 @@ npm run dev
 - **Modular Pixel Avatar Maker & Honey Shop**
 - **Real-Time Study Hive with Desks**
 - **Break Time Mini-Games (Memory Match & 2048)**
-- **StudyBee Assistant & Admin Dashboard**
+- **StudyHive Assistant & Admin Dashboard**

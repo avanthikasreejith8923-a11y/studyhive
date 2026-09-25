@@ -35,12 +35,12 @@ export const SocketProvider = ({ children }) => {
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
-      console.log('🐝 Connected to StudyBee real-time socket:', newSocket.id);
+      console.log('🐝 Connected to StudyHive real-time socket:', newSocket.id);
       setConnected(true);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('🔌 Disconnected from StudyBee socket');
+      console.log('🔌 Disconnected from StudyHive socket');
       setConnected(false);
     });
 

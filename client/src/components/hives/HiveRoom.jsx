@@ -6,6 +6,7 @@ import { DeskDecorRenderer } from '../library/DeskDecorRenderer';
 import { SharedHiveTimer } from './SharedHiveTimer';
 import { HiveSeatModal } from './HiveSeatModal';
 import { TaskList } from '../tasks/TaskList';
+import { MusicPlayer } from '../audio/MusicPlayer';
 import {
   Users,
   Copy,
@@ -57,7 +58,7 @@ export const HIVE_DESKS_CONFIG = [
   },
 ];
 
-export const HiveRoom = ({ hive: initialHive, onLeaveHive }) => {
+export const HiveRoom = ({ hive: initialHive, onLeaveHive, onTimerModeChange }) => {
   const { user } = useAuth();
   const { socket, joinHive, leaveHive, claimDesk, vacateDesk } = useSocket();
 
@@ -69,6 +70,9 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive }) => {
   // Sync when initialHive prop updates
   useEffect(() => {
     setHive(initialHive);
+    if (onTimerModeChange && initialHive?.timerState?.mode) {
+      onTimerModeChange(initialHive.timerState.mode);
+    }
   }, [initialHive]);
 
   // Join hive room via socket on mount
@@ -80,6 +84,15 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive }) => {
 
     const handleHiveState = ({ hive: updatedHive }) => {
       setHive(updatedHive);
+      if (onTimerModeChange && updatedHive?.timerState?.mode) {
+        onTimerModeChange(updatedHive.timerState.mode);
+      }
+    };
+
+    const handleTimerUpdate = (data) => {
+      if (onTimerModeChange && data?.mode) {
+        onTimerModeChange(data.mode);
+      }
     };
 
     const handleMemberJoined = ({ user: newUser }) => {
@@ -141,6 +154,7 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive }) => {
     };
 
     socket.on('hive:state', handleHiveState);
+    socket.on('hive:timer:update', handleTimerUpdate);
     socket.on('hive:member_joined', handleMemberJoined);
     socket.on('hive:member_left', handleMemberLeft);
     socket.on('hive:desk_claimed', handleDeskClaimed);
@@ -148,6 +162,7 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive }) => {
 
     return () => {
       socket.off('hive:state', handleHiveState);
+      socket.off('hive:timer:update', handleTimerUpdate);
       socket.off('hive:member_joined', handleMemberJoined);
       socket.off('hive:member_left', handleMemberLeft);
       socket.off('hive:desk_claimed', handleDeskClaimed);
@@ -478,6 +493,9 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive }) => {
             </div>
             <TaskList sessionId={`hive_${hive._id}_${currentUserIdStr}`} />
           </div>
+
+          {/* Persistent Lo-Fi Music Player */}
+          <MusicPlayer />
         </div>
       </div>
 

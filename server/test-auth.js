@@ -16,7 +16,7 @@ async function runTests() {
 
   const testUser = {
     username: `scholar_${Date.now().toString().slice(-4)}`,
-    email: `scholar_${Date.now()}@studybee.dev`,
+    email: `scholar_${Date.now()}@studyhive.dev`,
     password: 'password123',
   };
 

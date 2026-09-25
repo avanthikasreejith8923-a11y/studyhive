@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 
 const generateToken = (id) => {
-  const secret = process.env.JWT_SECRET || 'studybee_super_secret_jwt_key_cozy_library_2026';
+  const secret = process.env.JWT_SECRET || 'studyhive_super_secret_jwt_key_cozy_library_2026';
   return jwt.sign({ id }, secret, { expiresIn: '7d' });
 };
 
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
     const token = generateToken(user._id);
 
     return res.status(201).json({
-      message: 'Welcome to the StudyBee Library!',
+      message: 'Welcome to the StudyHive Library!',
       token,
       user,
     });

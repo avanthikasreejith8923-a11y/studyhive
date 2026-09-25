@@ -36,6 +36,7 @@ export const PomodoroTimer = ({
   targetMinutes = 25,
   onFocusComplete,
   onMinutesTick,
+  onModeChange,
 }) => {
   const [mode, setMode] = useState('focus'); // 'focus' | 'shortBreak' | 'longBreak'
   const [focusDuration, setFocusDuration] = useState(targetMinutes);
@@ -84,10 +85,12 @@ export const PomodoroTimer = ({
         // Auto-switch to break mode
         setMode('shortBreak');
         setTimeLeft(shortBreakDuration * 60);
+        if (onModeChange) onModeChange('shortBreak');
       } else {
         // Break finished, switch back to focus
         setMode('focus');
         setTimeLeft(focusDuration * 60);
+        if (onModeChange) onModeChange('focus');
       }
     }
 
@@ -97,6 +100,7 @@ export const PomodoroTimer = ({
   const handleModeChange = (newMode) => {
     setIsRunning(false);
     setMode(newMode);
+    if (onModeChange) onModeChange(newMode);
     if (newMode === 'focus') {
       setTimeLeft(focusDuration * 60);
     } else if (newMode === 'shortBreak') {
