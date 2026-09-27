@@ -48,4 +48,11 @@ const sessionSchema = new mongoose.Schema(
   }
 );
 
+// Indexes for fast history lookups, aggregation, and active session checks
+sessionSchema.index({ user: 1, startTime: -1 });
+sessionSchema.index({ user: 1, completed: 1 });
+sessionSchema.index({ deskId: 1 });
+sessionSchema.index({ createdAt: -1 });
+
 export const Session = mongoose.model('Session', sessionSchema);
+

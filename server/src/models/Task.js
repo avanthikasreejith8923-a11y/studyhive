@@ -28,4 +28,9 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
+// Indexes for fast session task loading and user checklist queries
+taskSchema.index({ session: 1, createdAt: 1 });
+taskSchema.index({ user: 1 });
+
 export const Task = mongoose.model('Task', taskSchema);
+

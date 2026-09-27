@@ -10,6 +10,12 @@ export const createSession = async (req, res) => {
       return res.status(400).json({ message: 'Subject is required to start a study session.' });
     }
 
+    // Atomically complete any previously uncompleted session for this scholar
+    await Session.updateMany(
+      { user: req.user._id, completed: false },
+      { $set: { completed: true, endTime: new Date() } }
+    );
+
     const session = await Session.create({
       user: req.user._id,
       subject: subject.trim(),
@@ -130,11 +136,24 @@ export const updateSession = async (req, res) => {
 
 export const getSessionHistory = async (req, res) => {
   try {
-    const sessions = await Session.find({ user: req.user._id })
-      .sort({ startTime: -1 })
-      .limit(20);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 15));
+    const skip = (page - 1) * limit;
 
-    return res.status(200).json({ sessions });
+    const [sessions, totalCount] = await Promise.all([
+      Session.find({ user: req.user._id })
+        .sort({ startTime: -1 })
+        .skip(skip)
+        .limit(limit),
+      Session.countDocuments({ user: req.user._id }),
+    ]);
+
+    return res.status(200).json({
+      sessions,
+      totalCount,
+      page,
+      totalPages: Math.ceil(totalCount / limit) || 1,
+    });
   } catch (error) {
     console.error('getSessionHistory error:', error);
     return res.status(500).json({ message: 'Failed to fetch session history.' });

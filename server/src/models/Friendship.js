@@ -28,5 +28,8 @@ const friendshipSchema = new mongoose.Schema(
 
 // Prevent duplicate friendship entries between the same two users in the same direction
 friendshipSchema.index({ requester: 1, recipient: 1 }, { unique: true });
+friendshipSchema.index({ recipient: 1, status: 1 });
+friendshipSchema.index({ requester: 1, status: 1 });
 
 export const Friendship = mongoose.model('Friendship', friendshipSchema);
+

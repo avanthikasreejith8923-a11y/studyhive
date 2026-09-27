@@ -66,17 +66,30 @@ export const createHive = async (req, res) => {
   }
 };
 
-// List public hives
+// List public hives (with pagination)
 export const listHives = async (req, res) => {
   try {
-    const hives = await Hive.find({ isPublic: true })
-      .populate('host', 'username equippedItems avatarConfig')
-      .populate('members', 'username equippedItems avatarConfig')
-      .populate('desks.user', 'username equippedItems avatarConfig')
-      .sort({ updatedAt: -1 })
-      .limit(30);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const skip = (page - 1) * limit;
 
-    res.json({ hives });
+    const [hives, totalCount] = await Promise.all([
+      Hive.find({ isPublic: true })
+        .populate('host', 'username equippedItems avatarConfig')
+        .populate('members', 'username equippedItems avatarConfig')
+        .populate('desks.user', 'username equippedItems avatarConfig')
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Hive.countDocuments({ isPublic: true }),
+    ]);
+
+    res.json({
+      hives,
+      totalCount,
+      page,
+      totalPages: Math.ceil(totalCount / limit) || 1,
+    });
   } catch (error) {
     console.error('Error listing hives:', error);
     res.status(500).json({ message: 'Failed to retrieve hives', error: error.message });

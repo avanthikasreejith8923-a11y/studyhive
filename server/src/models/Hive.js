@@ -100,4 +100,12 @@ const hiveSchema = new mongoose.Schema(
   }
 );
 
+// Indexes for fast public listing, join code lookup, and desk occupancy tracking
+hiveSchema.index({ isPublic: 1, updatedAt: -1 });
+hiveSchema.index({ host: 1 });
+hiveSchema.index({ members: 1 });
+hiveSchema.index({ 'desks.user': 1 });
+hiveSchema.index({ 'desks.deskId': 1 });
+
 export const Hive = mongoose.model('Hive', hiveSchema);
+

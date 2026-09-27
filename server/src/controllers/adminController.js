@@ -203,10 +203,19 @@ export const toggleAdminRole = async (req, res) => {
  */
 export const getAdminHives = async (req, res) => {
   try {
-    const hives = await Hive.find()
-      .populate('host', 'username email')
-      .populate('members', 'username email')
-      .sort({ updatedAt: -1 });
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const skip = (page - 1) * limit;
+
+    const [hives, totalCount] = await Promise.all([
+      Hive.find()
+        .populate('host', 'username email')
+        .populate('members', 'username email')
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Hive.countDocuments(),
+    ]);
 
     const formattedHives = hives.map((hive) => ({
       _id: hive._id,
@@ -223,7 +232,12 @@ export const getAdminHives = async (req, res) => {
       updatedAt: hive.updatedAt,
     }));
 
-    return res.status(200).json({ hives: formattedHives });
+    return res.status(200).json({
+      hives: formattedHives,
+      totalCount,
+      page,
+      totalPages: Math.ceil(totalCount / limit) || 1,
+    });
   } catch (error) {
     console.error('getAdminHives error:', error);
     return res.status(500).json({ message: 'Failed to fetch hives list.', error: error.message });

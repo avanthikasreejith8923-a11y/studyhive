@@ -13,11 +13,13 @@ export const areAcceptedFriends = async (userId1, userId2) => {
   return !!friendship;
 };
 
-// Get message history between two friends
+// Get message history between two friends (with pagination)
 export const getChatHistory = async (req, res) => {
   try {
     const currentUserId = req.user._id;
     const { friendId } = req.params;
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
 
     // Security check: Must be accepted friends
     const isFriend = await areAcceptedFriends(currentUserId, friendId);
@@ -27,16 +29,27 @@ export const getChatHistory = async (req, res) => {
       });
     }
 
-    const messages = await Message.find({
+    const query = {
       $or: [
         { sender: currentUserId, recipient: friendId },
         { sender: friendId, recipient: currentUserId },
       ],
-    })
-      .sort({ createdAt: 1 })
-      .limit(150);
+    };
 
-    res.json({ messages });
+    const totalCount = await Message.countDocuments(query);
+    const skip = (page - 1) * limit;
+
+    const messages = await Message.find(query)
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      messages,
+      totalCount,
+      page,
+      totalPages: Math.ceil(totalCount / limit) || 1,
+    });
   } catch (error) {
     console.error('Error fetching chat history:', error);
     res.status(500).json({ message: 'Failed to fetch chat messages', error: error.message });
