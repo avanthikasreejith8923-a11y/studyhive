@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🐝📚 STUDYHIVE
+<img src="./screenshots/logo.png" alt="StudyHive Logo" width="220" />
+
+# 🐝 STUDYHIVE
 ### *A Cozy Gamified Pixel Co-Working Library for Focused Minds*
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
