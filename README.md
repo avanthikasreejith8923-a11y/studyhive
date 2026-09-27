@@ -1,15 +1,23 @@
-# 🐝 StudyHive
+<div align="center">
+
+# 🐝📚 STUDYHIVE
 ### *A Cozy Gamified Pixel Co-Working Library for Focused Minds*
 
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-ESM-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![Socket.io](https://img.shields.io/badge/Socket.io-Real--Time-010101?style=flat-square&logo=socket.io&logoColor=white)](https://socket.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-amber?style=flat-square)](LICENSE)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-ESM-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-5-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Socket.io](https://img.shields.io/badge/Socket.io-Real--Time-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-amber?style=for-the-badge)](LICENSE)
+
+<p align="center">
+  <sub>Step into a warm 16-bit library nook. Pick a desk, start your Pomodoro timer, earn honey drops, and study together in real-time hives.</sub>
+</p>
 
 ---
+
+</div>
 
 ## 📖 Overview
 
@@ -19,19 +27,25 @@ Users claim seats at themed library desks, run structured Pomodoro focus cycles,
 
 ---
 
-## 📸 Interface Showcase
+## 📸 Screenshots
 
-### 🏛️ The Archival Study Hall & Focus Mode
-| The Archival Study Hall | Desk Claim & Focus Setup | Live Session & Study Assistant |
-| :---: | :---: | :---: |
-| ![The Archival Study Hall](./screenshots/library-room.png) | ![Claim Desk and Focus Target](./screenshots/desk-focus.png) | ![Live Session with Study Assistant](./screenshots/study-assistant.png) |
-| *Interactive 5-desk study room featuring live Pomodoro timers, seated avatars, and goal checklists.* | *Choose study subjects and configure structured focus targets from 15 to 60 minutes.* | *In-session study companion providing Pomodoro breakdowns and learning guidance directly at your desk.* |
+### 🏛️ Library & Desks
+| The Archival Study Hall | Desk Claim & Focus Target |
+| :---: | :---: |
+| ![The Archival Study Hall](./screenshots/library-room.png) | ![Claim Desk and Focus Target](./screenshots/desk-focus.png) |
+| *Interactive 5-desk study room featuring live Pomodoro timers, seated avatars, and goal checklists.* | *Choose study subjects and configure structured focus targets from 15 to 60 minutes.* |
 
-### 🐝 Scholar Authentication & Entrance
-| Welcome & Landing Portal | Library Pass Sign-In | New Scholar Registration |
-| :---: | :---: | :---: |
-| ![StudyHive Landing Page](./screenshots/landing-page.png) | ![Library Pass Sign-In](./screenshots/auth-login.png) | ![New Scholar Registration](./screenshots/auth-register.png) |
-| *Retro 16-bit entrance and features tour.* | *Pass sign-in with quick access demos.* | *Registration with starter Honey drops bonus.* |
+### 🤖 AI Study Assistant
+| StudyHive Scholar AI Assistant |
+| :---: |
+| ![StudyHive Scholar AI Assistant](./screenshots/study-assistant.png) |
+| *In-session AI study companion providing structured Pomodoro plans, active recall prompts, and learning guidance directly at your desk.* |
+
+### 🐝 Entrance & Authentication
+| Welcome & Landing Portal | Library Pass Sign-In |
+| :---: | :---: |
+| ![StudyHive Landing Page](./screenshots/landing-page.png) | ![Library Pass Sign-In](./screenshots/auth-login.png) |
+| *Retro 16-bit entrance, theme banner, and quick feature overview.* | *Pass sign-in with quick access demos for students and administrators.* |
 
 ---
 
