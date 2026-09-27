@@ -124,14 +124,16 @@ export const TaskList = ({ sessionId, onTasksChange }) => {
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
           placeholder="Add a task to complete (e.g. Solve 5 problems)..."
-          className="flex-1 pixel-input text-sm font-sans"
+          className="flex-1 pixel-input text-sm font-sans focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           maxLength={150}
           disabled={!sessionId || adding}
+          aria-label="New session goal description"
         />
         <button
           type="submit"
           disabled={!sessionId || !newText.trim() || adding}
-          className="pixel-btn-primary px-3 text-xs flex items-center gap-1"
+          className="pixel-btn-primary px-3 text-xs flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+          aria-label="Add goal to current session"
         >
           <Plus size={14} />
           <span>ADD</span>
@@ -176,7 +178,8 @@ export const TaskList = ({ sessionId, onTasksChange }) => {
               >
                 <button
                   type="button"
-                  className="text-honey-700 hover:text-honey-800 transition-colors"
+                  aria-label={task.done ? `Mark "${task.text}" as incomplete` : `Mark "${task.text}" as completed`}
+                  className="text-honey-700 hover:text-honey-800 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   {task.done ? (
                     <CheckSquare size={17} className="text-emerald-600" />
@@ -193,7 +196,8 @@ export const TaskList = ({ sessionId, onTasksChange }) => {
               <button
                 type="button"
                 onClick={() => handleDeleteTask(task._id)}
-                className="text-oak-400 hover:text-red-600 p-1 transition-colors"
+                aria-label={`Delete goal: ${task.text}`}
+                className="text-oak-400 hover:text-red-600 p-1 transition-colors focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
                 title="Remove task"
               >
                 <Trash2 size={13} />

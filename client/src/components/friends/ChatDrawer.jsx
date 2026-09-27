@@ -117,7 +117,7 @@ export const ChatDrawer = ({ friend, onClose, currentUser }) => {
     friendPresence.status === 'online' || friendPresence.status === 'in_hive';
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-full max-w-sm sm:max-w-md pixel-panel bg-cream-100 p-0 shadow-pixel-lg overflow-hidden flex flex-col h-[480px]">
+    <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] sm:w-full max-w-sm sm:max-w-md pixel-panel bg-cream-100 p-0 shadow-pixel-lg overflow-hidden flex flex-col h-[480px] max-h-[85vh]">
       {/* Chat Header */}
       <div className="pixel-panel-header flex items-center justify-between">
         <div className="flex items-center gap-2 truncate">
@@ -144,8 +144,10 @@ export const ChatDrawer = ({ friend, onClose, currentUser }) => {
         </div>
 
         <button
+          type="button"
           onClick={onClose}
-          className="hover:bg-honey-500 p-0.5 border border-pixel-border text-oak-900"
+          aria-label={`Close chat with ${friend.username}`}
+          className="hover:bg-honey-500 p-0.5 border border-pixel-border text-oak-900 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           title="Close Chat"
         >
           <X size={14} />
@@ -220,12 +222,14 @@ export const ChatDrawer = ({ friend, onClose, currentUser }) => {
           onChange={(e) => setInputText(e.target.value)}
           placeholder={`Message ${friend.username}...`}
           maxLength={1000}
-          className="flex-1 pixel-input text-xs font-sans py-2"
+          aria-label={`Type a direct message to ${friend.username}`}
+          className="flex-1 pixel-input text-xs font-sans py-2 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
         />
         <button
           type="submit"
           disabled={!inputText.trim() || sending}
-          className="pixel-btn-primary px-3 py-2 text-xs flex items-center gap-1 shadow-pixel-sm"
+          aria-label="Send direct message"
+          className="pixel-btn-primary px-3 py-2 text-xs flex items-center gap-1 shadow-pixel-sm focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none disabled:opacity-50"
         >
           <Send size={13} />
           <span className="hidden sm:inline">SEND</span>

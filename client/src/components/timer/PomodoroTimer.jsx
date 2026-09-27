@@ -147,7 +147,8 @@ export const PomodoroTimer = ({
           <button
             type="button"
             onClick={() => handleModeChange('focus')}
-            className={`pixel-btn text-[9px] py-1 px-2.5 ${
+            aria-label="Switch to 25 minute focus mode"
+            className={`pixel-btn text-[9px] py-1 px-2.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               mode === 'focus'
                 ? 'bg-honey-500 text-oak-900 font-bold'
                 : 'bg-cream-200 text-oak-700 hover:bg-cream-50'
@@ -158,7 +159,8 @@ export const PomodoroTimer = ({
           <button
             type="button"
             onClick={() => handleModeChange('shortBreak')}
-            className={`pixel-btn text-[9px] py-1 px-2.5 ${
+            aria-label="Switch to 5 minute short break mode"
+            className={`pixel-btn text-[9px] py-1 px-2.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               mode === 'shortBreak'
                 ? 'bg-emerald-500 text-white font-bold'
                 : 'bg-cream-200 text-oak-700 hover:bg-cream-50'
@@ -169,7 +171,8 @@ export const PomodoroTimer = ({
           <button
             type="button"
             onClick={() => handleModeChange('longBreak')}
-            className={`pixel-btn text-[9px] py-1 px-2.5 ${
+            aria-label="Switch to 15 minute long break mode"
+            className={`pixel-btn text-[9px] py-1 px-2.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               mode === 'longBreak'
                 ? 'bg-purple-600 text-white font-bold'
                 : 'bg-cream-200 text-oak-700 hover:bg-cream-50'
@@ -227,7 +230,8 @@ export const PomodoroTimer = ({
         <button
           type="button"
           onClick={() => setIsRunning(!isRunning)}
-          className={`pixel-btn py-2.5 px-6 text-xs flex items-center gap-2 ${
+          aria-label={isRunning ? 'Pause focus timer' : 'Start focus timer'}
+          className={`pixel-btn py-2.5 px-6 text-xs flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             isRunning
               ? 'bg-amber-500 text-oak-900'
               : 'pixel-btn-primary'
@@ -249,7 +253,8 @@ export const PomodoroTimer = ({
         <button
           type="button"
           onClick={handleReset}
-          className="pixel-btn-secondary py-2.5 px-3 text-xs text-oak-800"
+          aria-label="Reset timer to beginning"
+          className="pixel-btn-secondary py-2.5 px-3 text-xs text-oak-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           title="Reset Timer"
         >
           <RotateCcw size={14} />

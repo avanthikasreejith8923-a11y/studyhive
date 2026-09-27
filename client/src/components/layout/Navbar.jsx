@@ -2,13 +2,14 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { PixelBee } from '../common/PixelBee';
 import { PixelAvatar } from '../avatar/PixelAvatar';
-import { LogOut, ShieldCheck, Flame, BookOpen, Users, Sparkles, Store, Gamepad2 } from 'lucide-react';
+import { LogOut, ShieldCheck, Flame, BookOpen, Users, Sparkles, Store, Gamepad2, ScrollText } from 'lucide-react';
 
 export const Navbar = ({
   onOpenAuth,
   activeTab,
   setActiveTab,
   onOpenFriends,
+  onOpenHistory,
   pendingRequestsCount = 0,
   isBreakActive = false,
 }) => {
@@ -19,8 +20,17 @@ export const Navbar = ({
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
         {/* Brand / Logo */}
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="StudyHive Home - My Desk"
           onClick={() => setActiveTab && setActiveTab('library')}
-          className="flex items-center gap-3 cursor-pointer select-none group"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setActiveTab && setActiveTab('library');
+            }
+          }}
+          className="flex items-center gap-3 cursor-pointer select-none group focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
         >
           <div className="bg-honey-200 border-2 border-pixel-border p-1 shadow-pixel-sm group-hover:scale-105 transition-transform">
             <PixelBee size={36} animated={true} />
@@ -38,12 +48,17 @@ export const Navbar = ({
           </div>
         </div>
 
-        {/* Navigation Tabs (if logged in) */}
+        {/* Navigation Tabs (if logged in) - with responsive horizontal scroll for small screens */}
         {isAuthenticated && (
-          <nav className="flex items-center gap-1.5 bg-cream-200 p-1 border-2 border-pixel-border shadow-pixel-sm">
+          <nav
+            aria-label="Main Navigation"
+            className="flex items-center gap-1.5 bg-cream-200 p-1 border-2 border-pixel-border shadow-pixel-sm max-w-full overflow-x-auto scrollbar-none"
+          >
             <button
+              type="button"
               onClick={() => setActiveTab('library')}
-              className={`pixel-btn text-[10px] py-1 px-2.5 ${
+              aria-label="Navigate to My Desk"
+              className={`pixel-btn text-[10px] py-1 px-2.5 shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 activeTab === 'library' ? 'bg-honey-500 text-oak-900 font-bold' : 'bg-cream-100'
               }`}
             >
@@ -51,8 +66,10 @@ export const Navbar = ({
               My Desk
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('hives')}
-              className={`pixel-btn text-[10px] py-1 px-2.5 ${
+              aria-label="Navigate to Hives"
+              className={`pixel-btn text-[10px] py-1 px-2.5 shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 activeTab === 'hives' ? 'bg-honey-500 text-oak-900 font-bold' : 'bg-cream-100'
               }`}
             >
@@ -60,8 +77,10 @@ export const Navbar = ({
               Hives
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('games')}
-              className={`pixel-btn text-[10px] py-1 px-2.5 flex items-center gap-1 ${
+              aria-label="Navigate to Break Games"
+              className={`pixel-btn text-[10px] py-1 px-2.5 shrink-0 flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 activeTab === 'games' ? 'bg-honey-500 text-oak-900 font-bold' : 'bg-cream-100'
               }`}
               title={isBreakActive ? 'Break active: Games unlocked!' : 'Break games unlock during Pomodoro breaks'}
@@ -77,8 +96,10 @@ export const Navbar = ({
               )}
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('avatar')}
-              className={`pixel-btn text-[10px] py-1 px-2.5 ${
+              aria-label="Navigate to Avatar and Shop"
+              className={`pixel-btn text-[10px] py-1 px-2.5 shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 activeTab === 'avatar' ? 'bg-honey-500 text-oak-900 font-bold' : 'bg-cream-100'
               }`}
             >
@@ -87,8 +108,19 @@ export const Navbar = ({
             </button>
             <button
               type="button"
+              onClick={onOpenHistory}
+              aria-label="Open study history logbook"
+              className="pixel-btn text-[10px] py-1 px-2.5 shrink-0 bg-cream-100 hover:bg-cream-200 text-oak-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+              title="Scholar Study Logbook"
+            >
+              <ScrollText size={12} className="inline mr-1" />
+              <span>Logbook</span>
+            </button>
+            <button
+              type="button"
               onClick={onOpenFriends}
-              className="pixel-btn text-[10px] py-1 px-2.5 bg-honey-200 hover:bg-honey-300 text-oak-900 font-semibold relative"
+              aria-label="Open Friends and Chat"
+              className="pixel-btn text-[10px] py-1 px-2.5 shrink-0 bg-honey-200 hover:bg-honey-300 text-oak-900 font-semibold relative focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               title="Open Friends & Chat"
             >
               <span>💌 Friends</span>
@@ -100,8 +132,10 @@ export const Navbar = ({
             </button>
             {isAdmin && (
               <button
+                type="button"
                 onClick={() => setActiveTab('admin')}
-                className={`pixel-btn text-[10px] py-1 px-2.5 ${
+                aria-label="Navigate to Admin Dashboard"
+                className={`pixel-btn text-[10px] py-1 px-2.5 shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                   activeTab === 'admin' ? 'bg-amber-600 text-white font-bold' : 'bg-amber-100 text-amber-900'
                 }`}
               >
@@ -149,8 +183,17 @@ export const Navbar = ({
               {/* User Chip */}
               <div className="flex items-center gap-2 pl-1 border-l-2 border-pixel-border/30">
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Open wardrobe and shop avatar customization"
                   onClick={() => setActiveTab && setActiveTab('avatar')}
-                  className="w-8 h-8 bg-honey-200 border-2 border-pixel-border flex items-center justify-center p-0.5 shadow-pixel-sm cursor-pointer hover:scale-105 transition-transform"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setActiveTab && setActiveTab('avatar');
+                    }
+                  }}
+                  className="w-8 h-8 bg-honey-200 border-2 border-pixel-border flex items-center justify-center p-0.5 shadow-pixel-sm cursor-pointer hover:scale-105 transition-transform focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                   title="Customize avatar & shop"
                 >
                   <PixelAvatar size={26} equipped={user.equippedItems} animated={false} />
@@ -166,8 +209,10 @@ export const Navbar = ({
                 </div>
 
                 <button
+                  type="button"
                   onClick={logout}
-                  className="pixel-btn bg-cream-200 hover:bg-red-100 hover:text-red-700 p-1.5"
+                  aria-label="Sign out of the library"
+                  className="pixel-btn bg-cream-200 hover:bg-red-100 hover:text-red-700 p-1.5 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
                   title="Sign out of the library"
                 >
                   <LogOut size={13} />

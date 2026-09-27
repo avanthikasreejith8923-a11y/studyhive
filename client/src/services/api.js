@@ -63,7 +63,7 @@ export const sessionsAPI = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-  getHistory: () => apiFetch('/sessions'),
+  getHistory: (page = 1, limit = 10) => apiFetch(`/sessions?page=${page}&limit=${limit}`),
   getById: (id) => apiFetch(`/sessions/${id}`),
   getTasks: (sessionId) => apiFetch(`/sessions/${sessionId}/tasks`),
   createTask: (sessionId, text) =>

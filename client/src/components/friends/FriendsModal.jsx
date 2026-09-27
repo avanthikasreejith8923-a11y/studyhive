@@ -56,6 +56,7 @@ export const FriendsModal = ({
       }
     } catch (err) {
       console.error('Failed to load friends/requests:', err);
+      setError('Unable to load study friends. Please check your connection and retry.');
     } finally {
       setLoading(false);
     }

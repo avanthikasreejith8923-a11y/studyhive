@@ -80,7 +80,8 @@ export const BreakGamesView = ({
           <button
             type="button"
             onClick={onReturnToDesk}
-            className="pixel-btn-secondary text-xs px-4 py-2 flex items-center gap-1.5 shrink-0"
+            className="pixel-btn-secondary text-xs px-4 py-2 flex items-center gap-1.5 shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+            aria-label="Return to study desk"
           >
             <BookOpen size={13} />
             <span>RETURN TO DESK</span>
@@ -89,11 +90,12 @@ export const BreakGamesView = ({
       </div>
 
       {/* Game Selector Tabs */}
-      <div className="flex items-center gap-2 border-b-2 border-pixel-border bg-cream-200 p-1.5 shadow-pixel-sm">
+      <div className="flex items-center gap-2 border-b-2 border-pixel-border bg-cream-200 p-1.5 shadow-pixel-sm overflow-x-auto scrollbar-none">
         <button
           type="button"
           onClick={() => setSelectedGame('memory')}
-          className={`pixel-btn text-xs py-2 px-4 flex items-center gap-2 font-pixel transition-colors ${
+          aria-label="Play Memory Match mini-game"
+          className={`pixel-btn text-xs py-2 px-4 flex items-center gap-2 font-pixel transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             selectedGame === 'memory'
               ? 'bg-honey-500 text-oak-900 font-bold shadow-pixel-xs'
               : 'bg-cream-100 text-oak-700 hover:bg-cream-50'
@@ -106,7 +108,8 @@ export const BreakGamesView = ({
         <button
           type="button"
           onClick={() => setSelectedGame('2048')}
-          className={`pixel-btn text-xs py-2 px-4 flex items-center gap-2 font-pixel transition-colors ${
+          aria-label="Play 2048 Honey Tiles mini-game"
+          className={`pixel-btn text-xs py-2 px-4 flex items-center gap-2 font-pixel transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             selectedGame === '2048'
               ? 'bg-honey-500 text-oak-900 font-bold shadow-pixel-xs'
               : 'bg-cream-100 text-oak-700 hover:bg-cream-50'

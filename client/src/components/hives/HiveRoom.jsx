@@ -66,6 +66,7 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive, onTimerModeChange }) 
   const [selectedDesk, setSelectedDesk] = useState(null);
   const [isSeatModalOpen, setIsSeatModalOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [roomError, setRoomError] = useState('');
 
   // Sync when initialHive prop updates
   useEffect(() => {
@@ -153,12 +154,17 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive, onTimerModeChange }) 
       });
     };
 
+    const handleHiveError = ({ message }) => {
+      setRoomError(message || 'An error occurred in this study hive.');
+    };
+
     socket.on('hive:state', handleHiveState);
     socket.on('hive:timer:update', handleTimerUpdate);
     socket.on('hive:member_joined', handleMemberJoined);
     socket.on('hive:member_left', handleMemberLeft);
     socket.on('hive:desk_claimed', handleDeskClaimed);
     socket.on('hive:desk_vacated', handleDeskVacated);
+    socket.on('hive:error', handleHiveError);
 
     return () => {
       socket.off('hive:state', handleHiveState);
@@ -167,6 +173,7 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive, onTimerModeChange }) 
       socket.off('hive:member_left', handleMemberLeft);
       socket.off('hive:desk_claimed', handleDeskClaimed);
       socket.off('hive:desk_vacated', handleDeskVacated);
+      socket.off('hive:error', handleHiveError);
       leaveHive(hive._id);
     };
   }, [hive?._id, socket]);
@@ -199,6 +206,24 @@ export const HiveRoom = ({ hive: initialHive, onLeaveHive, onTimerModeChange }) 
 
   return (
     <div className="space-y-4">
+      {/* Real-time Hive Error Alert Banner */}
+      {roomError && (
+        <div className="p-3 bg-red-100 border-2 border-red-500 text-red-900 text-xs font-sans flex items-center justify-between shadow-pixel-sm">
+          <div className="flex items-center gap-2">
+            <span>⚠️</span>
+            <span>{roomError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRoomError('')}
+            className="text-red-700 hover:text-red-900 font-bold px-2 py-0.5"
+            aria-label="Dismiss room error"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Top Banner / Plaque */}
       <div className="pixel-panel bg-cream-100 p-4 shadow-pixel flex items-center justify-between gap-4 flex-wrap">
         <div>

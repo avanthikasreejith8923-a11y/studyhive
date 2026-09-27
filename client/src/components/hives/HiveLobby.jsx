@@ -17,6 +17,7 @@ import {
 export const HiveLobby = ({ onEnterHive }) => {
   const [hives, setHives] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
   const [joinCodeInput, setJoinCodeInput] = useState('');
   const [joiningCode, setJoiningCode] = useState(false);
   const [joinError, setJoinError] = useState('');
@@ -31,11 +32,13 @@ export const HiveLobby = ({ onEnterHive }) => {
 
   const fetchHives = async () => {
     setLoading(true);
+    setFetchError('');
     try {
       const data = await hivesAPI.list();
       setHives(data.hives || []);
     } catch (err) {
       console.error('Failed to load hives:', err);
+      setFetchError(err.message || 'Failed to connect to study hives. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -90,12 +93,14 @@ export const HiveLobby = ({ onEnterHive }) => {
 
   const handleDirectJoin = async (hive) => {
     try {
+      setJoinError('');
       const data = await hivesAPI.join({ hiveId: hive._id });
       if (onEnterHive) {
         onEnterHive(data.hive);
       }
     } catch (err) {
       console.error('Failed to enter hive:', err);
+      setJoinError(err.message || 'Could not enter hive room. It may have expired or is full.');
     }
   };
 
@@ -184,9 +189,37 @@ export const HiveLobby = ({ onEnterHive }) => {
           </span>
         </div>
 
+        {fetchError && (
+          <div className="p-3 bg-red-100 border-2 border-red-500 text-red-900 text-xs font-sans flex items-center justify-between mb-4">
+            <span>⚠️ {fetchError}</span>
+            <button
+              type="button"
+              onClick={fetchHives}
+              className="pixel-btn bg-red-200 hover:bg-red-300 text-[10px] py-1 px-2.5 text-red-900 font-bold"
+            >
+              RETRY
+            </button>
+          </div>
+        )}
+
         {loading ? (
-          <div className="pixel-panel p-8 text-center bg-cream-50 font-sans text-xs text-oak-600">
-            Searching for active study hives in the library...
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="pixel-panel bg-cream-50 p-4 border-2 border-pixel-border/40 animate-pulse h-40 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="w-28 h-4 bg-cream-300"></div>
+                    <div className="w-12 h-4 bg-cream-300"></div>
+                  </div>
+                  <div className="w-40 h-3 bg-cream-300 mb-3"></div>
+                  <div className="w-24 h-3 bg-cream-300"></div>
+                </div>
+                <div className="w-full h-8 bg-cream-300"></div>
+              </div>
+            ))}
           </div>
         ) : hives.length === 0 ? (
           <div className="pixel-panel p-10 text-center bg-cream-50 shadow-pixel border-2 border-dashed border-pixel-border/40">

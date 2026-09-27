@@ -18,25 +18,31 @@ export const ShopView = () => {
   const [catalog, setCatalog] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [actionItemId, setActionItemId] = useState(null);
   const [confirmModalItem, setConfirmModalItem] = useState(null);
   const [notification, setNotification] = useState('');
 
   // Fetch shop catalog on mount
-  useEffect(() => {
-    const fetchShop = async () => {
-      try {
-        const data = await shopAPI.getCatalog();
-        setCatalog(data.catalog || []);
-        if (data.user) {
-          updateUser(data.user);
-        }
-      } catch (err) {
-        console.error('Failed to load shop catalog:', err);
-      } finally {
-        setLoading(false);
+  const fetchShop = async () => {
+    setLoading(true);
+    setFetchError('');
+    try {
+      const data = await shopAPI.getCatalog();
+      setCatalog(data.catalog || []);
+      if (data.user) {
+        updateUser(data.user);
       }
-    };
+    } catch (err) {
+      console.error('Failed to load shop catalog:', err);
+      setFetchError(err.message || 'Failed to load library wardrobe. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchShop();
   }, []);
 
@@ -50,6 +56,7 @@ export const ShopView = () => {
 
   const handleEquip = async (itemId) => {
     setActionLoading(true);
+    setActionItemId(itemId);
     setNotification('');
     try {
       const data = await shopAPI.equip(itemId);
@@ -59,12 +66,14 @@ export const ShopView = () => {
       setNotification(err.message || 'Failed to equip item.');
     } finally {
       setActionLoading(false);
+      setActionItemId(null);
     }
   };
 
   const handleConfirmPurchase = async () => {
     if (!confirmModalItem) return;
     setActionLoading(true);
+    setActionItemId(confirmModalItem.id);
     setNotification('');
     try {
       const data = await shopAPI.purchase(confirmModalItem.id, true);
@@ -75,6 +84,7 @@ export const ShopView = () => {
       setNotification(err.message || 'Failed to complete purchase.');
     } finally {
       setActionLoading(false);
+      setActionItemId(null);
     }
   };
 
@@ -195,12 +205,12 @@ export const ShopView = () => {
         <div className="lg:col-span-8 space-y-4">
           <div className="pixel-panel p-5 bg-cream-100 shadow-pixel">
             {/* Category Filter Tabs */}
-            <div className="flex flex-wrap gap-2 mb-5 border-b-2 border-pixel-border pb-3">
+            <div className="flex flex-nowrap sm:flex-wrap gap-2 mb-5 border-b-2 border-pixel-border pb-3 overflow-x-auto scrollbar-none">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`pixel-btn text-xs py-1.5 px-3 ${
+                  className={`pixel-btn text-xs py-1.5 px-3 shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     selectedCategory === cat.id
                       ? 'bg-honey-500 text-oak-900 font-bold'
                       : 'bg-cream-50 text-oak-700 hover:bg-cream-200'
@@ -211,10 +221,58 @@ export const ShopView = () => {
               ))}
             </div>
 
+            {/* Error Banner with Retry */}
+            {fetchError && (
+              <div className="p-3 bg-red-100 border-2 border-red-500 text-red-900 text-xs font-sans flex items-center justify-between mb-4">
+                <span>⚠️ {fetchError}</span>
+                <button
+                  type="button"
+                  onClick={fetchShop}
+                  className="pixel-btn bg-red-200 hover:bg-red-300 text-[10px] py-1 px-2.5 text-red-900 font-bold"
+                >
+                  RETRY
+                </button>
+              </div>
+            )}
+
             {/* Items Grid */}
             {loading ? (
-              <div className="text-center py-10 font-sans text-sm text-oak-600">
-                Opening library wardrobe & shop archives...
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div
+                    key={i}
+                    className="p-3.5 border-2 border-pixel-border/40 bg-cream-100 animate-pulse flex flex-col justify-between h-44"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="w-8 h-8 bg-cream-300"></div>
+                        <div className="w-12 h-3 bg-cream-300"></div>
+                      </div>
+                      <div className="w-3/4 h-3 bg-cream-300 mb-2"></div>
+                      <div className="w-full h-2 bg-cream-300 mb-1"></div>
+                      <div className="w-2/3 h-2 bg-cream-300"></div>
+                    </div>
+                    <div className="pt-2 border-t border-pixel-border/20 flex items-center justify-between">
+                      <div className="w-12 h-3 bg-cream-300"></div>
+                      <div className="w-16 h-5 bg-cream-300"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredCatalog.length === 0 ? (
+              <div className="pixel-panel p-8 text-center bg-cream-50 border-2 border-dashed border-pixel-border/40 my-4">
+                <div className="text-3xl mb-2">🪴</div>
+                <h4 className="font-pixel text-xs text-oak-900 mb-1">NO ITEMS FOUND IN THIS CATEGORY</h4>
+                <p className="font-sans text-xs text-oak-600 mb-3 max-w-sm mx-auto">
+                  All items for this category have either been unlocked or haven't arrived in the library archives yet!
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('all')}
+                  className="pixel-btn-primary text-xs px-3 py-1.5"
+                >
+                  VIEW ALL GEAR
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -223,6 +281,7 @@ export const ShopView = () => {
                   const isEquipped =
                     equippedItems && equippedItems[item.category] === item.id;
                   const canAfford = (user?.honey || 0) >= item.cost;
+                  const isItemBusy = actionLoading && actionItemId === item.id;
 
                   return (
                     <div
@@ -272,9 +331,9 @@ export const ShopView = () => {
                               type="button"
                               disabled={actionLoading}
                               onClick={() => handleEquip(item.id)}
-                              className="pixel-btn bg-cream-100 hover:bg-white text-[9px] py-1 px-3 text-oak-900 font-bold"
+                              className="pixel-btn bg-cream-100 hover:bg-white text-[9px] py-1 px-3 text-oak-900 font-bold disabled:opacity-50"
                             >
-                              EQUIP
+                              {isItemBusy ? 'EQUIPPING...' : 'EQUIP'}
                             </button>
                           ) : (
                             <button
@@ -285,10 +344,10 @@ export const ShopView = () => {
                                 canAfford
                                   ? 'pixel-btn-primary'
                                   : 'bg-cream-300 text-oak-400 border-pixel-border cursor-not-allowed'
-                              }`}
+                              } disabled:opacity-50`}
                             >
                               <Lock size={10} />
-                              <span>UNLOCK</span>
+                              <span>{isItemBusy ? 'UNLOCKING...' : 'UNLOCK'}</span>
                             </button>
                           )}
                         </div>

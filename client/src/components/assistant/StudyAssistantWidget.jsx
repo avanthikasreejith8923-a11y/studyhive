@@ -168,7 +168,8 @@ export const StudyAssistantWidget = () => {
               <button
                 type="button"
                 onClick={handleClearChat}
-                className="p-1 hover:bg-honey-300 text-oak-800 border border-pixel-border bg-cream-50 transition-colors"
+                aria-label="Clear chat conversation history"
+                className="p-1 hover:bg-honey-300 text-oak-800 border border-pixel-border bg-cream-50 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 title="Clear conversation"
               >
                 <RotateCcw size={12} />
@@ -177,7 +178,8 @@ export const StudyAssistantWidget = () => {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-honey-300 text-oak-900 border border-pixel-border bg-cream-50 transition-colors"
+                aria-label="Minimize study assistant panel"
+                className="p-1 hover:bg-honey-300 text-oak-900 border border-pixel-border bg-cream-50 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 title="Minimize assistant"
               >
                 <ChevronDown size={14} />
@@ -296,12 +298,14 @@ export const StudyAssistantWidget = () => {
               placeholder="Ask a question or study tip..."
               maxLength={1000}
               disabled={isLoading}
-              className="flex-1 pixel-input text-xs py-1.5 px-2 bg-white disabled:opacity-60"
+              aria-label="Ask Study Assistant a question"
+              className="flex-1 pixel-input text-xs py-1.5 px-2 bg-white disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
             <button
               type="submit"
               disabled={isLoading || !inputText.trim()}
-              className="pixel-btn-primary px-3 py-1.5 text-xs flex items-center justify-center shrink-0 disabled:opacity-50"
+              aria-label="Send message to assistant"
+              className="pixel-btn-primary px-3 py-1.5 text-xs flex items-center justify-center shrink-0 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               title="Send message"
             >
               <Send size={12} />
@@ -315,7 +319,8 @@ export const StudyAssistantWidget = () => {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2 bg-honey-400 hover:bg-honey-300 border-3 border-pixel-border p-2.5 px-3.5 shadow-pixel-lg hover:-translate-y-0.5 transition-all"
+          aria-label="Open StudyHive AI Assistant chat panel"
+          className="group relative flex items-center gap-2 bg-honey-400 hover:bg-honey-300 border-3 border-pixel-border p-2.5 px-3.5 shadow-pixel-lg hover:-translate-y-0.5 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           title="Open StudyHive AI Assistant"
         >
           {/* Notification / Status Pip */}

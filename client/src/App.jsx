@@ -9,6 +9,7 @@ import { LibraryRoom } from './components/library/LibraryRoom';
 import { FocusPanel } from './components/library/FocusPanel';
 import { SeatSubjectModal } from './components/library/SeatSubjectModal';
 import { SessionSummaryModal } from './components/library/SessionSummaryModal';
+import { StudyHistoryModal } from './components/library/StudyHistoryModal';
 import { ShopView } from './components/shop/ShopView';
 import { HiveLobby } from './components/hives/HiveLobby';
 import { HiveRoom } from './components/hives/HiveRoom';
@@ -50,6 +51,7 @@ const MainContent = () => {
   const [friendsModalOpen, setFriendsModalOpen] = useState(false);
   const [activeChatFriend, setActiveChatFriend] = useState(null);
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
 
   // Study Session State
   const [activeSession, setActiveSession] = useState(null);
@@ -211,6 +213,7 @@ const MainContent = () => {
         activeTab={activeTab}
         setActiveTab={handleTabChange}
         onOpenFriends={() => setFriendsModalOpen(true)}
+        onOpenHistory={() => setHistoryModalOpen(true)}
         pendingRequestsCount={pendingRequestsCount}
         isBreakActive={isBreakActive}
       />
@@ -402,6 +405,11 @@ const MainContent = () => {
         tasks={sessionTasks}
         focusedMinutes={focusedMinutesElapsed}
         rewards={lastFinishedRewards}
+      />
+
+      <StudyHistoryModal
+        isOpen={historyModalOpen}
+        onClose={() => setHistoryModalOpen(false)}
       />
 
       <FriendsModal

@@ -144,8 +144,23 @@ export const LibraryRoom = ({
             return (
               <div
                 key={desk.id}
+                role={isOpen ? 'button' : undefined}
+                tabIndex={isOpen ? 0 : undefined}
+                aria-label={
+                  isUserHere
+                    ? `Your active study desk: ${desk.name}`
+                    : isOpen
+                    ? `Claim ${desk.name} - Open desk for studying`
+                    : `${desk.name} - Occupied by ${desk.defaultOccupant?.username || 'another scholar'}`
+                }
                 onClick={() => {
                   if (isOpen) {
+                    onSelectDesk(desk);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (isOpen && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
                     onSelectDesk(desk);
                   }
                 }}
@@ -153,7 +168,7 @@ export const LibraryRoom = ({
                   isUserHere
                     ? 'bg-amber-100 border-honey-600 shadow-pixel ring-2 ring-honey-500'
                     : isOpen
-                    ? 'bg-cream-50 border-pixel-border shadow-pixel hover:-translate-y-0.5 hover:shadow-pixel-lg cursor-pointer hover:bg-white'
+                    ? 'bg-cream-50 border-pixel-border shadow-pixel hover:-translate-y-0.5 hover:shadow-pixel-lg cursor-pointer hover:bg-white focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none'
                     : 'bg-cream-200/80 border-pixel-border/70 shadow-pixel-sm opacity-90'
                 }`}
               >
