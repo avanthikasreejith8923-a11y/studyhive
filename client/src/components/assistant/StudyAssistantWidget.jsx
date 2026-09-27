@@ -37,7 +37,16 @@ export const StudyAssistantWidget = () => {
     try {
       const saved = sessionStorage.getItem(storageKey);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const cleaned = parsed.filter(
+            (m) =>
+              !m.unconfigured &&
+              !m.content?.includes('resting in the library archives') &&
+              !m.content?.includes('add your ANTHROPIC_API_KEY')
+          );
+          if (cleaned.length > 0) return cleaned;
+        }
       }
     } catch (e) {
       console.warn('Failed to parse saved chat session:', e);

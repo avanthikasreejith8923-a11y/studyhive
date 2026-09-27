@@ -1,6 +1,8 @@
 # Database data
 data/
 server/data/
+server/.active_mongo_uri
+*.active_mongo_uri
 node_modules/
 /.pnp
 .pnp.js
