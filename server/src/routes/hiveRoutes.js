@@ -7,12 +7,13 @@ import {
   joinHive,
   leaveHive,
 } from '../controllers/hiveController.js';
+import { validateCreateHive } from '../middleware/validationMiddleware.js';
 
 const router = express.Router();
 
 router.use(requireAuth);
 
-router.post('/', createHive);
+router.post('/', validateCreateHive, createHive);
 router.get('/', listHives);
 router.post('/join', joinHive);
 router.get('/:id', getHiveById);

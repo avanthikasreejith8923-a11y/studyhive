@@ -6,6 +6,10 @@ import { areAcceptedFriends } from '../controllers/chatController.js';
 
 // In-memory active presence tracker: userId -> { socketId, userId, username, status, hiveId, hiveName }
 const activeUsers = new Map();
+// Multi-socket tracker: userId -> Set of socket IDs
+const userSockets = new Map();
+// Disconnect grace timers: userId -> timeoutId
+const disconnectTimers = new Map();
 
 // Helper exported to controllers to get live status
 export const getUserPresence = (userId) => {
@@ -21,7 +25,7 @@ export const getUserPresence = (userId) => {
 };
 
 export const setupSocketHandler = (io) => {
-  // Authentication middleware for socket connections
+  // Authentication middleware for socket connections: strictly enforces valid JWT
   io.use(async (socket, next) => {
     try {
       const token =
@@ -29,7 +33,7 @@ export const setupSocketHandler = (io) => {
         socket.handshake.headers?.authorization?.replace('Bearer ', '');
 
       if (!token) {
-        return next(); // Allow guest/unauthenticated socket if needed
+        return next(new Error('Authentication required: No token provided.'));
       }
 
       const secret = process.env.JWT_SECRET || 'studyhive_super_secret_jwt_key_cozy_library_2026';
@@ -38,13 +42,19 @@ export const setupSocketHandler = (io) => {
         'username equippedItems avatarConfig role isBanned'
       );
 
-      if (user && !user.isBanned) {
-        socket.user = user;
+      if (!user) {
+        return next(new Error('Authentication failed: User account not found.'));
       }
+
+      if (user.isBanned) {
+        return next(new Error('Authentication failed: Account has been banned.'));
+      }
+
+      socket.user = user;
       next();
     } catch (err) {
       console.warn('Socket auth verification failed:', err.message);
-      next();
+      return next(new Error('Authentication failed: Invalid or expired token.'));
     }
   });
 
@@ -55,14 +65,27 @@ export const setupSocketHandler = (io) => {
       const userIdStr = user._id.toString();
       console.log(`🔌 Authenticated socket connected: ${user.username} (${socket.id})`);
 
-      // Register presence as online
+      // Cancel disconnect eviction timer if user reconnected within grace window
+      if (disconnectTimers.has(userIdStr)) {
+        clearTimeout(disconnectTimers.get(userIdStr));
+        disconnectTimers.delete(userIdStr);
+      }
+
+      // Track socket in multi-socket map
+      if (!userSockets.has(userIdStr)) {
+        userSockets.set(userIdStr, new Set());
+      }
+      userSockets.get(userIdStr).add(socket.id);
+
+      // Register or maintain live presence
+      const existingPresence = activeUsers.get(userIdStr);
       activeUsers.set(userIdStr, {
         socketId: socket.id,
         userId: userIdStr,
         username: user.username,
-        status: 'online',
-        hiveId: null,
-        hiveName: null,
+        status: existingPresence?.status || 'online',
+        hiveId: existingPresence?.hiveId || null,
+        hiveName: existingPresence?.hiveName || null,
       });
 
       // Join individual user room for 1:1 notifications & chat
@@ -71,7 +94,7 @@ export const setupSocketHandler = (io) => {
       // Broadcast presence change to all clients
       io.emit('user:presence_changed', {
         userId: userIdStr,
-        presence: { status: 'online' },
+        presence: { status: existingPresence?.status || 'online' },
       });
     }
 
@@ -183,30 +206,41 @@ export const setupSocketHandler = (io) => {
     socket.on('hive:claim_desk', async ({ hiveId, deskId, subject }) => {
       try {
         if (!user || !hiveId || !deskId) return;
-        const userIdStr = user._id.toString();
-        const hive = await Hive.findById(hiveId);
-        if (!hive) return;
+        const cleanSubject =
+          typeof subject === 'string' && subject.trim()
+            ? subject.trim().slice(0, 60)
+            : 'General Focus';
 
-        // Check if desk is already occupied by someone else
-        const alreadyOccupied = hive.desks.find(
-          (d) => d.deskId === deskId && d.user.toString() !== userIdStr
+        // 1. Atomically remove this user from any other desk in this hive first
+        await Hive.updateOne(
+          { _id: hiveId },
+          { $pull: { desks: { user: user._id } } }
         );
-        if (alreadyOccupied) {
-          return socket.emit('hive:error', { message: 'This desk was just claimed by another scholar!' });
+
+        // 2. Atomically claim the desk only if deskId is NOT currently in the desks array
+        const updatedHive = await Hive.findOneAndUpdate(
+          {
+            _id: hiveId,
+            'desks.deskId': { $ne: deskId }, // Atomic condition: desk must not be occupied
+          },
+          {
+            $push: {
+              desks: {
+                deskId,
+                user: user._id,
+                subject: cleanSubject,
+                seatedAt: new Date(),
+              },
+            },
+          },
+          { new: true }
+        );
+
+        if (!updatedHive) {
+          return socket.emit('hive:error', {
+            message: 'This desk was just claimed by another scholar! Please choose another seat.',
+          });
         }
-
-        // Vacate previous desk if user was seated elsewhere in this hive
-        hive.desks = hive.desks.filter((d) => d.user.toString() !== userIdStr);
-
-        // Add new desk seating
-        hive.desks.push({
-          deskId,
-          user: user._id,
-          subject: subject ? subject.trim() : 'General Focus',
-          seatedAt: new Date(),
-        });
-
-        await hive.save();
 
         // Broadcast to everyone in hive room
         io.to(`hive:${hiveId}`).emit('hive:desk_claimed', {
@@ -217,10 +251,11 @@ export const setupSocketHandler = (io) => {
             equippedItems: user.equippedItems,
             avatarConfig: user.avatarConfig,
           },
-          subject: subject ? subject.trim() : 'General Focus',
+          subject: cleanSubject,
         });
       } catch (err) {
         console.error('Error on hive:claim_desk:', err);
+        socket.emit('hive:error', { message: 'Could not claim desk. Please try again.' });
       }
     });
 
@@ -445,18 +480,45 @@ export const setupSocketHandler = (io) => {
       }
     });
 
-    // Handle disconnect
+    // Handle disconnect with multi-tab tracking and a 5-second grace window
     socket.on('disconnect', async () => {
-      console.log(`👋 Client disconnected: ${socket.id}`);
+      console.log(`👋 Client socket disconnected: ${socket.id}`);
       if (user) {
         const userIdStr = user._id.toString();
-        const presence = activeUsers.get(userIdStr);
 
-        // If user was in a hive, vacate their desk and leave
-        if (presence?.hiveId) {
+        // 1. Remove this specific socket ID from the multi-socket set
+        const sockets = userSockets.get(userIdStr);
+        if (sockets) {
+          sockets.delete(socket.id);
+          if (sockets.size === 0) {
+            userSockets.delete(userIdStr);
+          }
+        }
+
+        // 2. If the user still has other active sockets (e.g. another open tab), keep them online!
+        if (userSockets.has(userIdStr)) {
+          return;
+        }
+
+        // 3. Clear any existing timer and start a 5-second grace window before evicting
+        if (disconnectTimers.has(userIdStr)) {
+          clearTimeout(disconnectTimers.get(userIdStr));
+        }
+
+        const timer = setTimeout(async () => {
+          disconnectTimers.delete(userIdStr);
+          // Check if user reconnected in the meantime
+          if (userSockets.has(userIdStr)) return;
+
+          activeUsers.delete(userIdStr);
+
+          // Direct DB-level cleanup: vacate any desks occupied by this user across ANY hive
           try {
-            const hive = await Hive.findById(presence.hiveId);
-            if (hive) {
+            const hivesWithUser = await Hive.find({
+              $or: [{ 'desks.user': user._id }, { members: user._id }],
+            });
+
+            for (const hive of hivesWithUser) {
               const vacatedDesk = hive.desks.find(
                 (d) => d.user && d.user.toString() === userIdStr
               );
@@ -466,7 +528,7 @@ export const setupSocketHandler = (io) => {
               hive.members = hive.members.filter((m) => m.toString() !== userIdStr);
               await hive.save();
 
-              const roomName = `hive:${presence.hiveId}`;
+              const roomName = `hive:${hive._id}`;
               if (vacatedDesk) {
                 io.to(roomName).emit('hive:desk_vacated', {
                   deskId: vacatedDesk.deskId,
@@ -478,17 +540,17 @@ export const setupSocketHandler = (io) => {
               });
             }
           } catch (err) {
-            console.error('Error during hive disconnect cleanup:', err);
+            console.error('Error during database disconnect cleanup:', err);
           }
-        }
 
-        activeUsers.delete(userIdStr);
+          // Broadcast offline status
+          io.emit('user:presence_changed', {
+            userId: userIdStr,
+            presence: { status: 'offline' },
+          });
+        }, 5000);
 
-        // Broadcast offline status
-        io.emit('user:presence_changed', {
-          userId: userIdStr,
-          presence: { status: 'offline' },
-        });
+        disconnectTimers.set(userIdStr, timer);
       }
     });
   });

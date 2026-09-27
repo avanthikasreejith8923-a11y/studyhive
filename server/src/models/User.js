@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
+      select: false,
     },
     role: {
       type: String,
@@ -105,4 +106,11 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
+// Indexes for fast lookups and administrative filtering
+userSchema.index({ role: 1 });
+userSchema.index({ isBanned: 1 });
+userSchema.index({ createdAt: -1 });
+
 export const User = mongoose.model('User', userSchema);
+
+
