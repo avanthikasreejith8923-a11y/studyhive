@@ -176,3 +176,4 @@ StudyHive includes a role-based moderation system. To elevate an account to **He
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE). You are free to study, modify, and distribute this software.
+
